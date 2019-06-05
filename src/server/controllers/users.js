@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const crypto = require("crypto");
 const userModel = require("../models/user");
+const helpers = require("../helpers/helpers");
 
 router.get("/create", (req, res) => {
     const password = req.query.password || "";
@@ -43,14 +44,15 @@ router.get("/create", (req, res) => {
         .catch(err => res.sendStatus(400));
 });
 
-router.get("/find", (req, res) => {
+router.get("/userinfo", (req, res) => {
+    const cookie = req.cookies["exampleAppCookie"] || "";
     let userName = req.query.userName || "";
     userName = userName.replace(/[!@#$%^&*]/g, "");
 
-    userModel
-        .findOne({ "user_name": userName }, "first_name")
+    helpers.checkSession(userName, cookie)
+        .then(() => userModel.findOne({ "user_name": userName }, { first_name: 1, last_name: 1 }))
         .then(user => res.status(200).send(JSON.stringify(user)))
-        .catch(err => res.sendStatus(400));
+        .catch(err => res.sendStatus(parseInt(err.message) || 400));
 });
 
 module.exports = router;

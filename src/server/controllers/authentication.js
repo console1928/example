@@ -1,34 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const crypto = require("crypto");
 const userModel = require("../models/user");
+const helpers = require("../helpers/helpers");
 
 router.get("/login", (req, res) => {
+    const randomNumber = Math.random().toString();
+    const cookie = randomNumber.substring(2, randomNumber.length);
     const password = req.query.password || "";
     let userName = req.query.userName || "";
     userName = userName.replace(/[!@#$%^&*]/g, "");
 
-    if (!userName || !password) {
-        res.sendStatus(400);
-    } else {
-        const randomNumber = Math.random().toString();
-        const cookie = randomNumber.substring(2, randomNumber.length);
-        userModel.findOne({ "user_name": userName })
-            .then(user => {
-                const { salt, hash } = user;
-                const encryptHash = crypto.pbkdf2Sync(password, salt, 10000, 512, "sha512");
-                if (crypto.timingSafeEqual(Buffer.from(hash), encryptHash)) {
-                    return userModel.updateOne({ "user_name": userName }, { $set: { "cookie": cookie } });
-                } else {
-                    throw new Error();
-                }
-            })
-            .then(document => {
-                res.cookie("exampleAppCookie", cookie, { maxAge: 900000, httpOnly: true });
-                res.sendStatus(200);
-            })
-            .catch(err => res.sendStatus(400));
-    }
+    helpers.authenticate(userName, password)
+        .then(() => userModel.updateOne({ "user_name": userName }, { $set: { "cookie": cookie } }))
+        .then(document => {
+            res.cookie("exampleAppCookie", cookie, { maxAge: 900000, httpOnly: true });
+            res.sendStatus(200);
+        })
+        .catch(err => res.sendStatus(400));
 });
 
 router.get("/logout", (req, res) => {
