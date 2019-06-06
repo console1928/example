@@ -50,8 +50,45 @@ router.get("/userinfo", (req, res) => {
     userName = userName.replace(/[!@#$%^&*]/g, "");
 
     helpers.checkSession(userName, cookie)
-        .then(() => userModel.findOne({ "user_name": userName }, { first_name: 1, last_name: 1 }))
+        .then(
+            () => userModel
+                .findOne(
+                    { "user_name": userName },
+                    { first_name: 1, last_name: 1, contacts: 1, dialogues: 1, posts: 1, _id: 1 }
+                )
+        )
         .then(user => res.status(200).send(JSON.stringify(user)))
+        .catch(err => res.sendStatus(parseInt(err.message) || 400));
+});
+
+router.get("/addcontact", (req, res) => {
+    const cookie = req.cookies["exampleAppCookie"] || "";
+    let userName = req.query.userName || "";
+    let newContact = req.query.newContact || "";
+    userName = userName.replace(/[!@#$%^&*]/g, "");
+    newContact = newContact.replace(/[!@#$%^&*]/g, "");
+
+    helpers.checkSession(userName, cookie)
+        .then(() => Promise.all([
+            userModel.findOne({ "user_name": userName }),
+            userModel.findOne({ "user_name": newContact })
+        ]))
+        .then(users => {
+            if (!newContact || !userName || users[0] === null || users[1] === null) {
+                throw new Error();
+            } else if (
+                users[0].contacts && users[0].contacts.indexOf(users[1]._id) !== -1 ||
+                users[1].contacts && users[1].contacts.indexOf(users[0]._id) !== -1
+            ) {
+                throw new Error();
+            }
+            return users;
+        })
+        .then(users => Promise.all([
+            userModel.updateOne({ "user_name": userName }, { $push: { "contacts": users[1]._id } }),
+            userModel.updateOne({ "user_name": newContact }, { $push: { "contacts": users[0]._id } })
+        ]))
+        .then(users => res.sendStatus(200))
         .catch(err => res.sendStatus(parseInt(err.message) || 400));
 });
 

@@ -10,8 +10,9 @@ const UserSchema = new Schema(
         salt: { type: String, required: true },
         hash: { type: Buffer, required: true },
         cookie: { type: String },
-        dialogues: [{ type: Schema.Types.ObjectId, ref: "Dialogue" }],
-        posts: [{ type: Schema.Types.ObjectId, ref: "Post" }]
+        contacts: [{ type: String }],
+        dialogues: [{ type: String }],
+        posts: [{ type: String }]
     }
 );
 
