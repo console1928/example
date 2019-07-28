@@ -3,6 +3,7 @@ const app = express();
 const config = require("./config");
 const users = require("./controllers/users.js");
 const authentication = require("./controllers/authentication.js");
+const swagger = require("./controllers/swagger.js");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const mongoDB = `mongodb+srv://admin:${config.mongoDbPass}@cluster0-y8qsw.mongodb.net/example_app?retryWrites=true`;
@@ -16,5 +17,6 @@ app.use(cookieParser());
 
 app.use("/users", users);
 app.use("/authentication", authentication);
+app.use("/api-docs", swagger);
 
 app.listen(config.port);

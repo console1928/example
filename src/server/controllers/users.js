@@ -4,6 +4,48 @@ const crypto = require("crypto");
 const userModel = require("../models/user");
 const helpers = require("../helpers/helpers");
 
+/**
+ * @swagger
+ *
+ * /users/create:
+ *   get:
+ *     description: Create user.
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: userName
+ *         description: Username to use for login.
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         description: User's password.
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: firstName
+ *         description: User's first name.
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: lastName
+ *         description: User's last name.
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: userPicture
+ *         description: User's picture.
+ *         in: query
+ *         required: false
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: User created.
+ *       400:
+ *         description: Error.
+ *     tags:
+ *       - users
+ */
 router.get("/create", (req, res) => {
     const password = req.query.password || "";
     const firstName = req.query.firstName || "";
@@ -44,6 +86,30 @@ router.get("/create", (req, res) => {
         .catch(err => res.sendStatus(400));
 });
 
+/**
+ * @swagger
+ *
+ * /users/userinfo:
+ *   get:
+ *     description: Get information about user.
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: userName
+ *         description: Username to use for login.
+ *         in: query
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: User info acquired.
+ *       400:
+ *         description: Error.
+ *       401:
+ *         description: Unauthorized.
+ *     tags:
+ *       - users
+ */
 router.get("/userinfo", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
     let userName = req.query.userName || "";
@@ -61,6 +127,36 @@ router.get("/userinfo", (req, res) => {
         .catch(err => res.sendStatus(parseInt(err.message) || 400));
 });
 
+/**
+ * @swagger
+ *
+ * /users/addcontact:
+ *   get:
+ *     description: Create user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: userName
+ *         description: Username to use for login.
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: newContact
+ *         description: User's new contact.
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: firstName
+ *     responses:
+ *       200:
+ *         description: New contact added to user.
+ *       400:
+ *         description: Error.
+ *       401:
+ *         description: Unauthorized.
+ *     tags:
+ *       - users
+ */
 router.get("/addcontact", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
     let userName = req.query.userName || "";
