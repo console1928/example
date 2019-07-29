@@ -6,7 +6,7 @@ const router = express.Router();
  *
  * /authentication/logout:
  *   get:
- *     description: Log out.
+ *     summary: Log out.
  *     responses:
  *       200:
  *         description: Logged out.

@@ -8,15 +8,18 @@ const helpers = require("../../helpers/helpers");
  *
  * /users/userinfo:
  *   get:
- *     description: Get information about user.
+ *     security:
+ *       - cookieAuth: []
+ *     summary: Get information about user.
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: userName
+ *       - in: query
+ *         name: userName
  *         description: Username.
- *         in: query
  *         required: true
- *         type: string
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: User info acquired.

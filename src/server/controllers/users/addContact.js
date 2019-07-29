@@ -8,21 +8,24 @@ const helpers = require("../../helpers/helpers");
  *
  * /users/addcontact:
  *   get:
- *     description: Create user
+ *     security:
+ *       - cookieAuth: []
+ *     summary: Add contact.
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: userName
+ *       - in: query
+ *         name: userName
  *         description: Username.
- *         in: query
  *         required: true
- *         type: string
- *       - name: newContact
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: newContact
  *         description: User's new contact.
- *         in: query
  *         required: true
- *         type: string
- *       - name: firstName
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: New contact added to user.

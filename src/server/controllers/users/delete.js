@@ -8,15 +8,18 @@ const helpers = require("../../helpers/helpers");
  *
  * /users/delete:
  *   delete:
- *     description: Delete user.
+ *     security:
+ *       - cookieAuth: []
+ *     summary: Delete user.
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: userName
+ *       - in: query
+ *         name: userName
  *         description: Username.
- *         in: query
  *         required: true
- *         type: string
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: User deleted.

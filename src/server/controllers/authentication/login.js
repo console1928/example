@@ -8,20 +8,22 @@ const helpers = require("../../helpers/helpers");
  *
  * /authentication/login:
  *   get:
- *     description: Login to the application.
+ *     summary: Login to the application.
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: userName
+ *       - in: query
+ *         name: userName
  *         description: Username to use for login.
- *         in: query
  *         required: true
- *         type: string
- *       - name: password
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: password
  *         description: User's password.
- *         in: query
  *         required: true
- *         type: string
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Logged in.

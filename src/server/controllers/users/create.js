@@ -8,35 +8,40 @@ const userModel = require("../../models/user");
  *
  * /users/create:
  *   post:
- *     description: Create user.
+ *     summary: Create user.
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: userName
+ *       - in: query
+ *         name: userName
  *         description: Username.
- *         in: query
  *         required: true
- *         type: string
- *       - name: password
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: password
  *         description: User's password.
- *         in: query
  *         required: true
- *         type: string
- *       - name: firstName
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: firstName
  *         description: User's first name.
- *         in: query
  *         required: true
- *         type: string
- *       - name: lastName
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: lastName
  *         description: User's last name.
- *         in: query
  *         required: true
- *         type: string
- *       - name: userPicture
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: userPicture
  *         description: User's picture.
- *         in: query
  *         required: false
- *         type: string
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: User created.
