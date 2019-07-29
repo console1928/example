@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const userModel = require("../models/user");
-const helpers = require("../helpers/helpers");
+const userModel = require("../../models/user");
+const helpers = require("../../helpers/helpers");
 
 /**
  * @swagger
@@ -44,23 +44,6 @@ router.get("/login", (req, res) => {
             res.sendStatus(200);
         })
         .catch(err => res.sendStatus(400));
-});
-
-/**
- * @swagger
- *
- * /authentication/logout:
- *   get:
- *     description: Log out.
- *     responses:
- *       200:
- *         description: Logged out.
- *     tags:
- *       - authentication
- */
-router.get("/logout", (req, res) => {
-    res.clearCookie("exampleAppCookie");
-    res.sendStatus(200);
 });
 
 module.exports = router;
