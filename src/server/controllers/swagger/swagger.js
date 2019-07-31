@@ -18,7 +18,9 @@ const options = {
         "./controllers/users/addContact.js",
         "./controllers/users/create.js",
         "./controllers/users/delete.js",
-        "./controllers/users/userInfo.js"
+        "./controllers/users/userInfo.js",
+        "./controllers/dialogues/create.js",
+        "./controllers/posts/create.js"
     ]
 };
 

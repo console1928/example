@@ -1,12 +1,14 @@
 const express = require("express");
 const app = express();
 const config = require("./config");
-const create = require("./controllers/users/create.js");
+const createUser = require("./controllers/users/create.js");
 const addContact = require("./controllers/users/addContact.js");
 const deleteUser = require("./controllers/users/delete.js");
 const userInfo = require("./controllers/users/userInfo.js");
 const login = require("./controllers/authentication/login.js");
 const logout = require("./controllers/authentication/logout.js");
+const createDialogue = require("./controllers/dialogues/create.js");
+const createPost = require("./controllers/posts/create.js");
 const swagger = require("./controllers/swagger/swagger.js");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
@@ -19,12 +21,14 @@ mongoose.connect(mongoDB, { useNewUrlParser: true })
 app.use(express.static("../front"));
 app.use(cookieParser());
 
-app.use("/users", create);
+app.use("/users", createUser);
 app.use("/users", addContact);
 app.use("/users", deleteUser);
 app.use("/users", userInfo);
 app.use("/authentication", login);
 app.use("/authentication", logout);
+app.use("/dialogues", createDialogue);
+app.use("/posts", createPost);
 app.use("/api-docs", swagger);
 
 app.listen(config.port);
