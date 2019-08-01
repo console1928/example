@@ -19,7 +19,7 @@ mongoose.connect(mongoDB, { useNewUrlParser: true })
     .then(db => console.log("Connected to database successfully!"))
     .catch(err => console.log("Unable to connect to the database. Error:", err));
 
-app.use(express.static("../front"));
+app.use(express.static("../front/build"));
 app.use(cookieParser());
 
 app.use("/users", createUser);
