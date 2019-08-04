@@ -1,0 +1,99 @@
+.container {
+    box-sizing: border-box;
+    width: 50%;
+    min-width: 800px;
+    margin: 50px auto;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    overflow-wrap: break-word;
+}
+
+.hat {
+    padding: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.author {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.date {
+    display: inline-block;
+}
+
+.name {
+    padding: 20px;
+    font-size: 40px;
+    font-weight: 400;
+}
+
+.text {
+    padding: 20px;
+}
+
+.footer {
+    padding: 20px;
+    overflow: auto;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.likeContainer {
+    float: right;
+}
+
+.likeContainerActive {
+    composes: likeContainer;
+    color: #f00;
+}
+
+.likeButton {
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: 0.3s all;
+    line-height: 50px;
+    text-align: center;
+}
+
+.likeButton:hover {
+    color: #f00;
+}
+
+.likeButton:active {
+    animation: gradient 100ms;
+}
+
+.likeCount {
+    display: inline-block;
+    font-size: 20px;
+}
+
+@keyframes gradient {
+    0% {
+        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 0%, #fff 0%, #fff 100%);
+    }
+    25% {
+        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 20%, #fff 0%, #fff 100%);
+    }
+    50% {
+        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 40%, #fff 0%, #fff 100%);
+    }
+    75% {
+        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 60%, #fff 0%, #fff 100%);
+    }
+    100% {
+        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 70%, #fff 0%, #fff 100%);
+    }
+}
+
+@media(max-width: 1024px) {
+    .container {
+        width: 100%;
+        min-width: initial;
+        border-radius: initial;
+    }
+}

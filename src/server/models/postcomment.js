@@ -3,9 +3,9 @@ const Schema = mongoose.Schema;
 
 const PostCommentSchema = new Schema(
     {
-        comment_sender: { type: String, required: true },
-        comment_text: { type: String, required: true },
-        child_comments: [{ type: Schema.Types.ObjectId, ref: "PostComment" }]
+        author: { type: String, required: true },
+        text: { type: String, required: true },
+        comments: [{ type: Schema.Types.ObjectId, ref: "PostComment" }]
     }
 );
 

@@ -15,12 +15,6 @@ const helpers = require("../../helpers/helpers");
  *       - application/json
  *     parameters:
  *       - in: query
- *         name: userName
- *         description: Username.
- *         required: true
- *         schema:
- *           type: string
- *       - in: query
  *         name: newContact
  *         description: User's new contact.
  *         required: true
@@ -38,18 +32,16 @@ const helpers = require("../../helpers/helpers");
  */
 router.get("/addcontact", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
-    let userName = req.query.userName || "";
     let newContact = req.query.newContact || "";
-    userName = userName.replace(/[!@#$%^&*]/g, "");
     newContact = newContact.replace(/[!@#$%^&*]/g, "");
 
-    helpers.checkSession(userName, cookie)
+    helpers.checkSession(cookie)
         .then(() => Promise.all([
-            userModel.findOne({ "user_name": userName }),
-            userModel.findOne({ "user_name": newContact })
+            userModel.findOne({ "cookie": cookie }),
+            userModel.findOne({ "name": newContact })
         ]))
         .then(users => {
-            if (!newContact || !userName || users[0] === null || users[1] === null) {
+            if (!newContact || users[0] === null || users[1] === null) {
                 throw new Error();
             } else if (
                 users[0].contacts && users[0].contacts.indexOf(users[1]._id) !== -1 ||
@@ -60,8 +52,8 @@ router.get("/addcontact", (req, res) => {
             return users;
         })
         .then(users => Promise.all([
-            userModel.updateOne({ "user_name": userName }, { $push: { "contacts": users[1]._id } }),
-            userModel.updateOne({ "user_name": newContact }, { $push: { "contacts": users[0]._id } })
+            userModel.updateOne({ "cookie": cookie }, { $push: { "contacts": users[1]._id } }),
+            userModel.updateOne({ "name": newContact }, { $push: { "contacts": users[0]._id } })
         ]))
         .then(users => res.sendStatus(200))
         .catch(err => res.sendStatus(parseInt(err.message) || 400));

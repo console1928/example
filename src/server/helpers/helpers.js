@@ -9,7 +9,7 @@ const authenticate = function (userName, password) {
             resolve();
         }
     })
-        .then(() => userModel.findOne({ "user_name": userName }))
+        .then(() => userModel.findOne({ "name": userName }))
         .then(user => {
             const { salt, hash } = user;
             const encryptHash = crypto.pbkdf2Sync(password, salt, 10000, 512, "sha512");
@@ -21,15 +21,15 @@ const authenticate = function (userName, password) {
         });
 };
 
-const checkSession = function (userName, cookie) {
+const checkSession = function (cookie) {
     return new Promise(function (resolve, reject) {
-        if (!userName || !cookie) {
+        if (!cookie) {
             throw new Error("400");
         } else {
             resolve();
         }
     })
-        .then(() => userModel.findOne({ "user_name": userName }))
+        .then(() => userModel.findOne({ "cookie": cookie }))
         .then(user => {
             const actualCookie = user.cookie;
             if (cookie === actualCookie) {

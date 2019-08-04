@@ -13,13 +13,6 @@ const helpers = require("../../helpers/helpers");
  *     summary: Delete user.
  *     produces:
  *       - application/json
- *     parameters:
- *       - in: query
- *         name: userName
- *         description: Username.
- *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
  *         description: User deleted.
@@ -30,13 +23,11 @@ const helpers = require("../../helpers/helpers");
  */
 router.delete("/delete", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
-    let userName = req.query.userName || "";
-    userName = userName.replace(/[!@#$%^&*]/g, "");
 
-    helpers.checkSession(userName, cookie)
-        .then(() => userModel.findOne({ "user_name": userName }))
+    helpers.checkSession(cookie)
+        .then(() => userModel.findOne({ "cookie": cookie }))
         .then(user => {
-            if (!userName || user === null) {
+            if (user === null) {
                 throw new Error();
             }
             return user;

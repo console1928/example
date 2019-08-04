@@ -13,13 +13,6 @@ const helpers = require("../../helpers/helpers");
  *     summary: Get information about user.
  *     produces:
  *       - application/json
- *     parameters:
- *       - in: query
- *         name: userName
- *         description: Username.
- *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
  *         description: User info acquired.
@@ -32,15 +25,13 @@ const helpers = require("../../helpers/helpers");
  */
 router.get("/userinfo", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
-    let userName = req.query.userName || "";
-    userName = userName.replace(/[!@#$%^&*]/g, "");
 
-    helpers.checkSession(userName, cookie)
+    helpers.checkSession(cookie)
         .then(
             () => userModel
                 .findOne(
-                    { "user_name": userName },
-                    { first_name: 1, last_name: 1, contacts: 1, dialogues: 1, posts: 1, _id: 1 }
+                    { "cookie": cookie },
+                    { _id: 1, firstName: 1, lastName: 1, contacts: 1, dialogues: 1, posts: 1 }
                 )
         )
         .then(user => res.status(200).send(JSON.stringify(user)))

@@ -16,8 +16,8 @@ const helpers = require("../../helpers/helpers");
  *       - application/json
  *     parameters:
  *       - in: query
- *         name: userName
- *         description: Username.
+ *         userName: userName
+ *         description: User name.
  *         required: true
  *         schema:
  *           type: string
@@ -46,23 +46,22 @@ router.post("/create", (req, res) => {
     let userName = req.query.userName || "";
     let postName = req.query.postName || "";
     let postText = req.query.postText || "";
+    const postDate = Date.now();
     userName = userName.replace(/[!@#$%^&*]/g, "");
 
-    helpers.checkSession(userName, cookie)
+    helpers.checkSession(cookie)
         .then(user => {
-            if (
-                !userName ||
-                !postName ||
-                !postText
-            ) {
+            if (!postName || !postText) {
                 throw new Error();
             } else {
                 const post = new postModel(
                     {
-                        post_author: userName,
-                        post_name: postName,
-                        post_text: postText,
-                        post_comments: []
+                        author: userName,
+                        name: postName,
+                        text: postText,
+                        date: postDate,
+                        comments: [],
+                        likes: []
                     }
                 );
                 return post;
@@ -71,7 +70,7 @@ router.post("/create", (req, res) => {
         .then(post => post.save())
         .then(post =>
             userModel.updateOne(
-                { "user_name": userName },
+                { "cookie": cookie },
                 { $addToSet: { posts: post._id } }
             )
         )

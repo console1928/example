@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const PrivateMessageSchema = new Schema(
     {
-        message_sender: { type: String, required: true },
-        message_text: { type: String, required: true }
+        sender: { type: String, required: true },
+        text: { type: String, required: true }
     }
 );
 

@@ -40,7 +40,7 @@ router.get("/login", (req, res) => {
     userName = userName.replace(/[!@#$%^&*]/g, "");
 
     helpers.authenticate(userName, password)
-        .then(() => userModel.updateOne({ "user_name": userName }, { $set: { "cookie": cookie } }))
+        .then(() => userModel.updateOne({ "name": userName }, { $set: { "cookie": cookie } }))
         .then(document => {
             res.cookie("exampleAppCookie", cookie, { maxAge: 900000, httpOnly: true });
             res.sendStatus(200);

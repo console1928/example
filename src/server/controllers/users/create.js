@@ -59,7 +59,7 @@ router.post("/create", (req, res) => {
     userName = userName.replace(/[!@#$%^&*]/g, "");
 
     userModel
-        .findOne({ "user_name": userName })
+        .findOne({ "name": userName })
         .then(user => {
             if (
                 !firstName ||
@@ -74,10 +74,10 @@ router.post("/create", (req, res) => {
                 const hash = crypto.pbkdf2Sync(password, salt, 10000, 512, "sha512");
                 const user = new userModel(
                     {
-                        user_name: userName,
-                        first_name: firstName,
-                        last_name: lastName,
-                        user_picture: userPicture,
+                        name: userName,
+                        firstName: firstName,
+                        lastName: lastName,
+                        picture: userPicture,
                         salt: salt,
                         hash: hash
                     }

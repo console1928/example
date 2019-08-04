@@ -6,7 +6,7 @@ const postModel = require("../../models/post");
  * @swagger
  *
  * /posts/queryPage:
- *   post:
+ *   get:
  *     summary: Query posts chunk.
  *     produces:
  *       - application/json
@@ -31,7 +31,7 @@ const postModel = require("../../models/post");
  *     tags:
  *       - posts
  */
-router.post("/queryPage", (req, res) => {
+router.get("/queryPage", (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip) : 0;
     const limit = req.query.limit ? parseInt(req.query.limit) : 0;
 
@@ -39,6 +39,8 @@ router.post("/queryPage", (req, res) => {
         postModel.find().skip(skip).limit(limit)
             .then(post => res.status(200).send(JSON.stringify(post)))
             .catch(err => res.sendStatus(400));
+    } else {
+        res.sendStatus(400);
     }
 });
 

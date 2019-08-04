@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const DialogueSchema = new Schema(
     {
-        dialogue_name: { type: String, required: true },
-        dialogue_picture: { type: String },
+        name: { type: String, required: true },
+        picture: { type: String },
         messages: [{ type: Schema.Types.ObjectId, ref: "PrivateMessage" }]
     }
 );

@@ -16,12 +16,6 @@ const helpers = require("../../helpers/helpers");
  *       - application/json
  *     parameters:
  *       - in: query
- *         name: userName
- *         description: Username.
- *         required: true
- *         schema:
- *           type: string
- *       - in: query
  *         name: dialogueName
  *         description: Dialogue name.
  *         required: true
@@ -43,24 +37,18 @@ const helpers = require("../../helpers/helpers");
  */
 router.post("/create", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
-    let userName = req.query.userName || "";
     let dialogueName = req.query.dialogueName || "";
     const dialoguePicture = req.query.dialoguePicture || "";
-    userName = userName.replace(/[!@#$%^&*]/g, "");
 
-    helpers.checkSession(userName, cookie)
+    helpers.checkSession(cookie)
         .then(() => {
-            if (
-                !userName ||
-                !postName ||
-                !postText
-            ) {
+            if (!postName || !postText) {
                 throw new Error();
             } else {
                 const dialogue = new dialogueModel(
                     {
-                        dialogue_name: dialogueName,
-                        dialogue_picture: dialoguePicture,
+                        name: dialogueName,
+                        picture: dialoguePicture,
                         messages: []
                     }
                 );
@@ -70,7 +58,7 @@ router.post("/create", (req, res) => {
         .then(dialogue => dialogue.save())
         .then(dialogue =>
             userModel.updateOne(
-                { "user_name": userName },
+                { "cookie": cookie },
                 { $addToSet: { dialogues: dialogue._id } }
             )
         )

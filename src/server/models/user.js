@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
     {
-        user_name: { type: String, required: true, max: 100 },
-        first_name: { type: String, required: true, max: 100 },
-        last_name: { type: String, required: true, max: 100 },
-        user_picture: { type: String },
+        name: { type: String, required: true, max: 100 },
+        firstName: { type: String, required: true, max: 100 },
+        lastName: { type: String, required: true, max: 100 },
+        picture: { type: String },
         salt: { type: String, required: true },
         hash: { type: Buffer, required: true },
         cookie: { type: String },
