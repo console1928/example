@@ -45,7 +45,7 @@ router.get("/login", (req, res) => {
             res.cookie("exampleAppCookie", cookie, { maxAge: 900000, httpOnly: true });
             res.sendStatus(200);
         })
-        .catch(err => res.sendStatus(400));
+        .catch(error => res.sendStatus(400));
 });
 
 module.exports = router;

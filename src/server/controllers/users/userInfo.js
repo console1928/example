@@ -31,11 +31,11 @@ router.get("/userinfo", (req, res) => {
             () => userModel
                 .findOne(
                     { "cookie": cookie },
-                    { _id: 1, firstName: 1, lastName: 1, contacts: 1, dialogues: 1, posts: 1 }
+                    { _id: 1, name: 1, firstName: 1, lastName: 1, contacts: 1, dialogues: 1, posts: 1 }
                 )
         )
         .then(user => res.status(200).send(JSON.stringify(user)))
-        .catch(err => res.sendStatus(parseInt(err.message) || 400));
+        .catch(error => res.sendStatus(parseInt(error.message) || 400));
 });
 
 module.exports = router;

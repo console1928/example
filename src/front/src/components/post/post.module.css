@@ -48,23 +48,35 @@
     color: #f00;
 }
 
-.likeButton {
+.likeButtonActive {
     display: inline-block;
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
     margin-right: 10px;
     cursor: pointer;
     transition: 0.3s all;
-    line-height: 50px;
+    line-height: 45px;
     text-align: center;
 }
 
-.likeButton:hover {
+.likeButtonActive:hover {
     color: #f00;
 }
 
-.likeButton:active {
+.likeButtonActive:active {
     animation: gradient 100ms;
+}
+
+.likeButtonDisabled {
+    composes: likeButtonActive;
+}
+
+.likeButtonDisabled:hover {
+    color: initial;
+}
+
+.likeButtonDisabled:active {
+    animation: none;
 }
 
 .likeCount {

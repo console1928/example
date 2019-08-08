@@ -34,7 +34,7 @@ router.delete("/delete", (req, res) => {
         })
         //.then(user => user.remove())
         .then(document => res.sendStatus(200))
-        .catch(err => res.sendStatus(400));
+        .catch(error => res.sendStatus(400));
 });
 
 module.exports = router;

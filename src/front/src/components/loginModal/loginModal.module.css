@@ -1,0 +1,84 @@
+.container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.inputContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 450px;
+    width: 100%;
+    max-width: 500px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.inputContainerHeader {
+    height: 50px;
+    width: 100%;
+}
+
+.inputFieldContainer {
+    display: block;
+    width: 50%;
+    margin: 30px auto;
+}
+
+.inputField {
+    outline: none;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+}
+
+.inputFieldLabel {
+    margin-bottom: 10px;
+}
+
+.inputSubmit {
+    outline: none;
+    height: 50px;
+    width: 100%;
+    max-width: 150px;
+    margin-top: 50px;
+    background-color: #fff;
+    border: 1px solid #000;
+    font-size: 20px;
+    transition: 0.3s all;
+    cursor: pointer;
+}
+
+.inputSubmit:hover {
+    color: #f00;
+    border: 1px solid #f00;
+}
+
+.closeButtonContainer {
+    float: right;
+    margin: 20px;
+    cursor: pointer;
+    transition: 0.3s all;
+}
+
+.closeButtonContainer:hover {
+    color: #f00;
+}
+
+@media(max-width: 600px) {
+    .inputContainer {
+        max-width: 100%;
+        border-radius: initial;
+    }
+    
+    .inputFieldContainer {
+        width: 80%;
+    }
+}

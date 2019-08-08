@@ -56,7 +56,7 @@ router.get("/addcontact", (req, res) => {
             userModel.updateOne({ "name": newContact }, { $push: { "contacts": users[0]._id } })
         ]))
         .then(users => res.sendStatus(200))
-        .catch(err => res.sendStatus(parseInt(err.message) || 400));
+        .catch(error => res.sendStatus(parseInt(error.message) || 400));
 });
 
 module.exports = router;

@@ -21,7 +21,8 @@ const options = {
         "./controllers/users/userInfo.js",
         "./controllers/dialogues/create.js",
         "./controllers/posts/create.js",
-        "./controllers/posts/queryPage.js"
+        "./controllers/posts/queryPage.js",
+        "./controllers/posts/toggleLike.js"
     ]
 };
 

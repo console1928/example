@@ -10,6 +10,7 @@ const logout = require("./controllers/authentication/logout.js");
 const createDialogue = require("./controllers/dialogues/create.js");
 const createPost = require("./controllers/posts/create.js");
 const queryPage = require("./controllers/posts/queryPage.js");
+const togglePostLike = require("./controllers/posts/toggleLike.js");
 const swagger = require("./controllers/swagger/swagger.js");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
@@ -31,6 +32,7 @@ app.use("/authentication", logout);
 app.use("/dialogues", createDialogue);
 app.use("/posts", createPost);
 app.use("/posts", queryPage);
+app.use("/posts", togglePostLike);
 app.use("/api-docs", swagger);
 
 app.listen(config.port);

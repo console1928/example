@@ -1,16 +1,20 @@
 import React from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import styles from "./post.module.css";
-import { IPost } from "../../types";
+import { IPost, IUserInfo } from "../../types";
 import Api from "../../api";
 import Comment from "../comment";
+import UnauthenticatedMessage from "../unauthenticatedMessage";
 
 interface IPostProps {
+    userInfo: IUserInfo | null;
     post: IPost;
 }
 
 interface IPostState {
     postIsLiked: boolean;
+    postLikesCount: number;
+    unauthenticatedMessageOpened: boolean;
 }
 
 class Post extends React.Component<IPostProps, IPostState> {
@@ -18,13 +22,34 @@ class Post extends React.Component<IPostProps, IPostState> {
         super(props, state);
 
         this.state = {
-            postIsLiked: false
+            postIsLiked: (
+                this.props.post.likes &&
+                this.props.userInfo &&
+                this.props.post.likes.indexOf(this.props.userInfo._id) !== -1
+            ) || false,
+            postLikesCount: (this.props.post.likes && this.props.post.likes.length) || 0,
+            unauthenticatedMessageOpened: false
         };
 
+        this.handleLikePress = this.handleLikePress.bind(this);
+        this.showUnauthenticatedMessage = this.showUnauthenticatedMessage.bind(this);
+        this.closeUnauthenticatedMessage = this.closeUnauthenticatedMessage.bind(this);
         this.togglePostLike = this.togglePostLike.bind(this);
     }
-    
+
     Api = new Api();
+
+    componentDidUpdate(nextProps: IPostProps, nextState: IPostState): void {
+        if (nextProps !== this.props) {
+            this.setState({
+                postIsLiked: (
+                    this.props.post.likes &&
+                    this.props.userInfo &&
+                    this.props.post.likes.indexOf(this.props.userInfo._id) !== -1
+                ) || false
+            });
+        }
+    }
 
     formatDate(dateString: string): string {
         const monthNames: string[] = [
@@ -50,9 +75,27 @@ class Post extends React.Component<IPostProps, IPostState> {
         return `${monthNames[monthIndex]} ${day}, ${year}`;
     }
 
+    handleLikePress(): void {
+        if (this.props.userInfo) {
+            this.togglePostLike();
+        } else {
+            this.showUnauthenticatedMessage();
+        }
+    }
+
+    showUnauthenticatedMessage(): void {
+        this.setState({ unauthenticatedMessageOpened: true });
+    }
+
+    closeUnauthenticatedMessage(): void {
+        this.setState({ unauthenticatedMessageOpened: false });
+    }
+
     togglePostLike(): void {
-        this.setState({ postIsLiked: !this.state.postIsLiked });
-        this.Api.togglePostLike();
+        this.setState(
+            () => ({ postIsLiked: !this.state.postIsLiked }),
+            () => this.setState({ postLikesCount: this.state.postLikesCount + (this.state.postIsLiked ? 1 : -1) }));
+        this.Api.togglePostLike(this.props.post._id);
     }
 
     render(): JSX.Element | null {
@@ -69,16 +112,14 @@ class Post extends React.Component<IPostProps, IPostState> {
                 <div className={styles.footer}>
                     <div className={this.state.postIsLiked ? styles.likeContainerActive : styles.likeContainer}>
                         <div
-                            className={styles.likeButton}
-                            onClick={this.togglePostLike}
+                            className={this.props.userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
+                            onClick={this.handleLikePress}
                         >
                             {this.state.postIsLiked ? <FaHeart /> : <FaRegHeart />}
                         </div>
-                        <div className={styles.likeCount}>
-                            {this.props.post.likes && (
-                                this.props.post.likes.length + (this.state.postIsLiked ? 1 : 0)
-                                )}
-                        </div>
+                        <div className={styles.likeCount}>{this.state.postLikesCount}</div>
+                        {this.state.unauthenticatedMessageOpened && (
+                            <UnauthenticatedMessage closeUnauthenticatedMessage={this.closeUnauthenticatedMessage} />)}
                     </div>
                 </div>
                 <div>
@@ -86,7 +127,8 @@ class Post extends React.Component<IPostProps, IPostState> {
                         this.props.post.comments.map(
                             (comment: any) => (
                                 <Comment comment={comment} />
-                            ))}
+                            )
+                        )}
                 </div>
             </div>
         );

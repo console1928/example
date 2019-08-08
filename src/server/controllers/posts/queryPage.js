@@ -36,9 +36,9 @@ router.get("/queryPage", (req, res) => {
     const limit = req.query.limit ? parseInt(req.query.limit) : 0;
 
     if (limit > 0 && limit <= 20) {
-        postModel.find().skip(skip).limit(limit)
+        postModel.find().sort({ $natural: -1 }).skip(skip).limit(limit)
             .then(post => res.status(200).send(JSON.stringify(post)))
-            .catch(err => res.sendStatus(400));
+            .catch(error => res.sendStatus(400));
     } else {
         res.sendStatus(400);
     }

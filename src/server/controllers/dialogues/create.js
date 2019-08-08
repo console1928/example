@@ -63,7 +63,7 @@ router.post("/create", (req, res) => {
             )
         )
         .then(document => res.sendStatus(200))
-        .catch(err => res.sendStatus(400));
+        .catch(error => res.sendStatus(400));
 });
 
 module.exports = router;

@@ -16,12 +16,6 @@ const helpers = require("../../helpers/helpers");
  *       - application/json
  *     parameters:
  *       - in: query
- *         userName: userName
- *         description: User name.
- *         required: true
- *         schema:
- *           type: string
- *       - in: query
  *         name: postName
  *         description: Post name.
  *         required: true
@@ -43,20 +37,19 @@ const helpers = require("../../helpers/helpers");
  */
 router.post("/create", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
-    let userName = req.query.userName || "";
     let postName = req.query.postName || "";
     let postText = req.query.postText || "";
     const postDate = Date.now();
-    userName = userName.replace(/[!@#$%^&*]/g, "");
 
     helpers.checkSession(cookie)
+        .then(() => userModel.findOne({ "cookie": cookie }))
         .then(user => {
             if (!postName || !postText) {
                 throw new Error();
             } else {
                 const post = new postModel(
                     {
-                        author: userName,
+                        author: user._id,
                         name: postName,
                         text: postText,
                         date: postDate,
@@ -75,7 +68,7 @@ router.post("/create", (req, res) => {
             )
         )
         .then(document => res.sendStatus(200))
-        .catch(err => res.sendStatus(400));
+        .catch(error => res.sendStatus(400));
 });
 
 module.exports = router;

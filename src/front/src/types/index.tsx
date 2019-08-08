@@ -1,5 +1,6 @@
 export interface IUserInfo {
     _id: string;
+    name: string;
     firstName: string;
     lastName: string;
     contacts: [];
@@ -14,7 +15,7 @@ export interface IPost {
     text: string;
     date: string;
     comments: [];
-    likes: [];
+    likes: string[];
 }
 
 export interface IPostComment {
