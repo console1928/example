@@ -68,11 +68,15 @@ class Post extends React.Component<IPostProps, IPostState> {
         ];
 
         const date: Date = new Date(dateString);
+        let hours: number | string = date.getHours();
+        if (hours < 10) { hours = "0" + hours; }
+        let minutes: number | string = date.getMinutes();
+        if (minutes < 10) { minutes = "0" + minutes; }
         const day: number = date.getDate();
-        const monthIndex: number = date.getMonth();
+        const month: number = date.getMonth();
         const year: number = date.getFullYear();
 
-        return `${monthNames[monthIndex]} ${day}, ${year}`;
+        return `${monthNames[month]} ${day}, ${year} at ${hours}:${minutes}`;
     }
 
     handleLikePress(): void {

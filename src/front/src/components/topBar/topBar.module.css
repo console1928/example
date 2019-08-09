@@ -1,3 +1,6 @@
+@value variables: "../../variables.css";
+@value mainColor from variables;
+
 .container {
     position: fixed;
     top: 0px;
@@ -5,6 +8,7 @@
     width: 100%;
     background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
 }
 
 .signInContainer {
@@ -19,7 +23,7 @@
 }
 
 .signInIcon:hover {
-    color: #f00;
+    color: mainColor;
     cursor: pointer;
     transition: 0.3s all;
 }

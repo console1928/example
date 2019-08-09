@@ -52,21 +52,15 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
             <React.Fragment>
                 <div className={styles.container}>
                     {this.props.userInfo ? (
-                        <div
-                            className={styles.signOutContainer}
-                            onClick={this.logout}
-                        >
+                        <div className={styles.signOutContainer}>
                             <div className={styles.userName}>
                                 {`${this.props.userInfo.firstName} ${this.props.userInfo.lastName}`}
                             </div>
-                            <div className={styles.signOutIcon}><FaSignOutAlt /></div>
+                            <div className={styles.signOutIcon} onClick={this.logout}><FaSignOutAlt /></div>
                         </div>
                     ) : (
-                        <div
-                            className={styles.signInContainer}
-                            onClick={this.renderLoginModal}
-                        >
-                            <div className={styles.signInIcon}><FaSignInAlt /></div>
+                        <div className={styles.signInContainer}>
+                            <div className={styles.signInIcon} onClick={this.renderLoginModal}><FaSignInAlt /></div>
                         </div>
                     )}
                 </div>

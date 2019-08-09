@@ -1,5 +1,5 @@
 import React from "react";
-import { FaRegTimesCircle } from "react-icons/fa";
+import { FaRegTimesCircle, FaCopyright } from "react-icons/fa";
 import styles from "./loginModal.module.css";
 import { IUserInfo } from "../../types";
 import Api from "../../api";
@@ -12,6 +12,8 @@ interface ILoginModalProps {
 interface ILoginModalState {
     userName: string | null;
     password: string | null;
+    credentialsAreWrong: boolean;
+    loginIsPending: boolean;
 }
 
 class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
@@ -20,7 +22,9 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
 
         this.state = {
             userName: null,
-            password: null
+            password: null,
+            credentialsAreWrong: false,
+            loginIsPending: false
         };
 
         this.inputContainerRef = null;
@@ -30,6 +34,7 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
         this.closeModal = this.closeModal.bind(this);
         this.setUserName = this.setUserName.bind(this);
         this.setPassword = this.setPassword.bind(this);
+        this.removeWrongCredentialsMessage = this.removeWrongCredentialsMessage.bind(this);
     }
 
     inputContainerRef: any = null;
@@ -52,13 +57,20 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
 
     login(event: React.FormEvent<HTMLFormElement>): void {
         event.preventDefault();
+        this.removeWrongCredentialsMessage();
         if (this.state.userName && this.state.password) {
+            this.setState({ loginIsPending: true });
             this.Api
                 .login(this.state.userName, this.state.password)
                 .then(this.Api.getUserInfo)
-                .then((userInfo: IUserInfo) => this.props.setUserInfo(userInfo))
+                .then((userInfo: IUserInfo) => {
+                        this.setState({ loginIsPending: false });
+                        this.props.setUserInfo(userInfo);
+                    })
                 .then(this.props.closeModal)
-                .catch(error => console.error(error));
+                .catch(error => {
+                        console.error(error); this.setState({ credentialsAreWrong: true, loginIsPending: false })
+                    });
         }
     }
 
@@ -68,12 +80,20 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
 
     setUserName(event: React.FormEvent<HTMLDivElement>): void {
         const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
+        this.removeWrongCredentialsMessage();
         this.setState({ userName: target.value });
     }
 
     setPassword(event: React.FormEvent<HTMLDivElement>): void {
         const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
+        this.removeWrongCredentialsMessage();
         this.setState({ password: target.value });
+    }
+
+    removeWrongCredentialsMessage(): void {
+        if (this.state.credentialsAreWrong) {
+            this.setState({ credentialsAreWrong: false });
+        }
     }
 
     render(): JSX.Element | null {
@@ -95,7 +115,7 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
                         <div className={styles.inputFieldContainer}>
                             <div className={styles.inputFieldLabel}>{"User Name"}</div>
                             <input
-                                className={styles.inputField}
+                                className={this.state.credentialsAreWrong ? styles.inputFieldError : styles.inputField}
                                 type={"text"}
                                 required={true}
                                 onChange={this.setUserName}
@@ -105,15 +125,25 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
                         <div className={styles.inputFieldContainer}>
                             <div className={styles.inputFieldLabel}>{"Password"}</div>
                             <input
-                                className={styles.inputField}
-                                type={"text"}
+                                className={this.state.credentialsAreWrong ? styles.inputFieldError : styles.inputField}
+                                type={"password"}
                                 required={true}
                                 onChange={this.setPassword}
                                 value={this.state.password || ""}
                             />
                         </div>
+                        <div className={styles.wrongCredentialsMessageContainer}>
+                            {this.state.credentialsAreWrong && (
+                                    <div className={styles.wrongCredentialsMessage}>{"Wrong username or password"}</div>
+                                )}
+                        </div>
                         <div className={styles.inputFieldContainer}>
-                            <input className={styles.inputSubmit} type={"submit"} value={"Log in"} />
+                            {this.state.loginIsPending &&
+                                !this.state.credentialsAreWrong ? (
+                                        <div className={styles.spinner}><FaCopyright /></div>
+                                    ) : (
+                                        <input className={styles.inputSubmit} type={"submit"} value={"Log in"} />
+                                    )}
                         </div>
                     </form>
                 </div>

@@ -7,23 +7,24 @@ const helpers = require("../../helpers/helpers");
  * @swagger
  *
  * /authentication/login:
- *   get:
+ *   post:
  *     summary: Login to the application.
  *     produces:
  *       - application/json
- *     parameters:
- *       - in: query
- *         name: userName
- *         description: Username to use for login.
- *         required: true
- *         schema:
- *           type: string
- *       - in: query
- *         name: password
- *         description: User's password.
- *         required: true
- *         schema:
- *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userName:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             required:
+ *               - userName
+ *               - password
  *     responses:
  *       200:
  *         description: Logged in.
@@ -32,17 +33,17 @@ const helpers = require("../../helpers/helpers");
  *     tags:
  *       - authentication
  */
-router.get("/login", (req, res) => {
+router.post("/login", (req, res) => {
     const randomNumber = Math.random().toString();
     const cookie = randomNumber.substring(2, randomNumber.length);
-    const password = req.query.password || "";
-    let userName = req.query.userName || "";
+    const password = req.body.password || "";
+    let userName = req.body.userName || "";
     userName = userName.replace(/[!@#$%^&*]/g, "");
 
     helpers.authenticate(userName, password)
         .then(() => userModel.updateOne({ "name": userName }, { $set: { "cookie": cookie } }))
         .then(document => {
-            res.cookie("exampleAppCookie", cookie, { maxAge: 900000, httpOnly: true });
+            res.cookie("exampleAppCookie", cookie, { maxAge: 86400000, httpOnly: true });
             res.sendStatus(200);
         })
         .catch(error => res.sendStatus(400));

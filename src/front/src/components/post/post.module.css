@@ -1,3 +1,7 @@
+@value variables: "../../variables.css";
+@value mainColor from variables;
+
+
 .container {
     box-sizing: border-box;
     width: 50%;
@@ -45,7 +49,7 @@
 
 .likeContainerActive {
     composes: likeContainer;
-    color: #f00;
+    color: mainColor;
 }
 
 .likeButtonActive {
@@ -60,7 +64,7 @@
 }
 
 .likeButtonActive:hover {
-    color: #f00;
+    color: mainColor;
 }
 
 .likeButtonActive:active {
@@ -85,21 +89,11 @@
 }
 
 @keyframes gradient {
-    0% {
-        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 0%, #fff 0%, #fff 100%);
-    }
-    25% {
-        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 20%, #fff 0%, #fff 100%);
-    }
-    50% {
-        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 40%, #fff 0%, #fff 100%);
-    }
-    75% {
-        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 60%, #fff 0%, #fff 100%);
-    }
-    100% {
-        background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 70%, #fff 0%, #fff 100%);
-    }
+    0% { background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 0%, #fff 0%, #fff 100%); }
+    25% { background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 20%, #fff 0%, #fff 100%); }
+    50% { background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 40%, #fff 0%, #fff 100%); }
+    75% { background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 60%, #fff 0%, #fff 100%); }
+    100% { background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2) 70%, #fff 0%, #fff 100%); }
 }
 
 @media(max-width: 1024px) {

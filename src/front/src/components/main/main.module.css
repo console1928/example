@@ -1,3 +1,33 @@
+@value variables: "../../variables.css";
+@value mainColor from variables;
+
 .container {
-    padding-top: 50px;
+    position: absolute;
+    top: 50px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    overflow: auto;
+}
+
+.bottomLoaderContainer {
+    height: 50px;
+    width: 100%;
+    text-align: center;
+    line-height: 50px;
+}
+
+.spinner {
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    color: mainColor;    
+    line-height: 50px;
+    font-size: 30px;
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    from { transform:rotate(0deg); transform-origin: 25px 22px; }
+    to { transform:rotate(359deg); transform-origin: 25px 22px; }
 }

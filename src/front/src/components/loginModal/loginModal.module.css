@@ -1,3 +1,6 @@
+@value variables: "../../variables.css";
+@value mainColor from variables;
+
 .container {
     position: fixed;
     top: 0;
@@ -5,6 +8,7 @@
     left: 0;
     right: 0;
     background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1;
 }
 
 .inputContainer {
@@ -37,10 +41,36 @@
     width: 100%;
     padding: 10px;
     font-size: 18px;
+    border: 1px solid #333;
+}
+
+.inputFieldError {
+    composes: inputField;
+    border: 1px solid #f00;
 }
 
 .inputFieldLabel {
     margin-bottom: 10px;
+}
+
+.wrongCredentialsMessageContainer {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    color: #f00;
+}
+
+.spinner {
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    margin-top: 50px;
+    color: mainColor;
+    line-height: 50px;
+    text-align: center;
+    font-size: 30px;
+    animation: spin 1s infinite linear;
 }
 
 .inputSubmit {
@@ -57,8 +87,8 @@
 }
 
 .inputSubmit:hover {
-    color: #f00;
-    border: 1px solid #f00;
+    color: mainColor;
+    border: 1px solid mainColor;
 }
 
 .closeButtonContainer {
@@ -69,7 +99,12 @@
 }
 
 .closeButtonContainer:hover {
-    color: #f00;
+    color: mainColor;
+}
+
+@keyframes spin {
+    from { transform:rotate(0deg); transform-origin: 25px 22px; }
+    to { transform:rotate(359deg); transform-origin: 25px 22px; }
 }
 
 @media(max-width: 600px) {

@@ -22,6 +22,7 @@ mongoose.connect(mongoDB, { useNewUrlParser: true })
 
 app.use(express.static("../front/build"));
 app.use(cookieParser());
+app.use(express.json());
 
 app.use("/users", createUser);
 app.use("/users", addContact);

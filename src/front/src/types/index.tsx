@@ -8,6 +8,14 @@ export interface IUserInfo {
     posts: IPost[];
 }
 
+export interface IPostPreview {
+    _id: string;
+    author: string;
+    name: string;
+    text: string;
+    date: string;
+}
+
 export interface IPost {
     _id: string;
     author: string;

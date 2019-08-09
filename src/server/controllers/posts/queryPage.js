@@ -23,6 +23,12 @@ const postModel = require("../../models/post");
  *         required: true
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: startDate
+ *         description: Start Date.
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Posts chunk acquired.
@@ -34,9 +40,14 @@ const postModel = require("../../models/post");
 router.get("/queryPage", (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip) : 0;
     const limit = req.query.limit ? parseInt(req.query.limit) : 0;
+    const startDate = req.query.startDate || Date.now();
 
     if (limit > 0 && limit <= 20) {
-        postModel.find().sort({ $natural: -1 }).skip(skip).limit(limit)
+        postModel
+            .find({ date: { $lte : new Date(startDate) } })
+            .sort({ $natural: -1 })
+            .skip(skip)
+            .limit(limit)
             .then(post => res.status(200).send(JSON.stringify(post)))
             .catch(error => res.sendStatus(400));
     } else {
