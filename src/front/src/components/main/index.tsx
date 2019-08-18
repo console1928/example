@@ -43,9 +43,6 @@ class Main extends React.Component<IMainProps, IMainState> {
     Api = new Api();
 
     componentDidMount(): void {
-        this.Api.getUserInfo()
-            .then((userInfo: IUserInfo) => this.props.setUserInfo(userInfo))
-            .catch(error => console.error(error));
         this.queryPostsChunk();
     }
 

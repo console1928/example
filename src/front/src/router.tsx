@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Switch } from "react-router";
 import { IUserInfo } from "./types";
+import Api from "./api";
 import Main from "./components/main";
 import StartPage from "./components/startPage";
 
@@ -22,6 +23,14 @@ class Router extends React.Component<IRouterProps, IRouterState> {
         this.setUserInfo= this.setUserInfo.bind(this);
     }
 
+    Api = new Api();
+
+    componentDidMount(): void {
+        this.Api.getUserInfo()
+            .then((userInfo: IUserInfo) => this.setUserInfo(userInfo))
+            .catch(error => console.error(error));
+    }
+
     setUserInfo(userInfo: IUserInfo | null): void {
         this.setState({ userInfo });
     }
@@ -30,7 +39,11 @@ class Router extends React.Component<IRouterProps, IRouterState> {
         return (
             <BrowserRouter>
                 <Switch>
-                    <Route exact={true} path={"/"} component={StartPage} />
+                    <Route
+                        exact={true}
+                        path={"/"}
+                        render={() => <StartPage userInfo={this.state.userInfo} setUserInfo={this.setUserInfo} />}
+                    />
                     <Route
                         exact={true}
                         path={"/posts"}

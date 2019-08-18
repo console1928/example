@@ -1,5 +1,6 @@
 import React from "react";
-import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { FaHome, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import styles from "./topBar.module.css";
 import { IUserInfo } from "../../types";
 import Api from "../../api";
@@ -51,6 +52,11 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
         return (
             <React.Fragment>
                 <div className={styles.container}>
+                    <div className={styles.homeContainer}>
+                        <Link className={styles.link} to={"/"}>
+                            <div className={styles.homeIcon}><FaHome /></div>
+                        </Link>
+                    </div>
                     {this.props.userInfo ? (
                         <div className={styles.signOutContainer}>
                             <div className={styles.userName}>

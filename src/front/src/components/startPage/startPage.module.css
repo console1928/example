@@ -1,7 +1,55 @@
+@value variables: "../../variables.css";
+@value mainColor from variables;
+
 .container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 50px;
+}
+
+.linkContainer {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.linkIcon {
+    display: inline-block;
+    margin-left: 20px;
+    vertical-align: middle;
+}
+
+.link {
+    color: #333;
+    transition: 0.3s all;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.link:hover {
+    color: mainColor;
+}
+
+.button {
+    display: inline-block;
+    height: 40px;
+    width: 100px;
+    border: 1px solid #000;
+    background-color: #fff;
+    font-size: 20px;
+    transition: 0.3s all;
+    cursor: pointer;
+    line-height: 40px;
+    text-align: center;
+}
+
+.button:hover {
+    color: mainColor;
+    border: 1px solid mainColor;
+}
+
+.middleText {
+    display: inline-block;
+    margin: 0px 20px;
+    font-size: 20px;
 }

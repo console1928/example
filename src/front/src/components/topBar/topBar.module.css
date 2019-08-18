@@ -28,12 +28,19 @@
     transition: 0.3s all;
 }
 
-.signOutContainer {
+.signOutContainer,
+.homeContainer {
     composes: signInContainer;
 }
 
-.signOutIcon {
+.homeContainer {
+    float: left;
+}
+
+.signOutIcon,
+.homeIcon {
     composes: signInIcon;
+    color: #333;
 }
 
 .userName {
