@@ -4,6 +4,7 @@ import { FaArrowAltCircleRight } from "react-icons/fa";
 import styles from "./startPage.module.css";
 import { IUserInfo } from "../../types";
 import LoginModal from "../loginModal";
+import SignUpModal from "../signUpModal";
 
 interface IStartPageProps extends RouteComponentProps {
     userInfo: IUserInfo | null;
@@ -12,6 +13,7 @@ interface IStartPageProps extends RouteComponentProps {
 
 interface IStartPageState {
     loginModalOpened: boolean;
+    signUpModalOpened: boolean;
 }
 
 class StartPage extends React.Component<IStartPageProps, IStartPageState> {
@@ -19,11 +21,14 @@ class StartPage extends React.Component<IStartPageProps, IStartPageState> {
         super(props, state);
 
         this.state = {
-            loginModalOpened: false
+            loginModalOpened: false,
+            signUpModalOpened: false
         };
 
         this.renderLoginModal = this.renderLoginModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
+        this.closeLoginModal = this.closeLoginModal.bind(this);
+        this.renderSignUpModal = this.renderSignUpModal.bind(this);
+        this.closeSignUpModal = this.closeSignUpModal.bind(this);
         this.setUserInfo = this.setUserInfo.bind(this);
     }
 
@@ -43,8 +48,16 @@ class StartPage extends React.Component<IStartPageProps, IStartPageState> {
         this.setState({ loginModalOpened: true });
     }
 
-    closeModal(): void {
+    renderSignUpModal(): void {
+        this.setState({ signUpModalOpened: true });
+    }
+
+    closeLoginModal(): void {
         this.setState({ loginModalOpened: false });
+    }
+
+    closeSignUpModal(): void {
+        this.setState({ signUpModalOpened: false });
     }
 
     setUserInfo(userInfo: IUserInfo | null): void {
@@ -63,7 +76,12 @@ class StartPage extends React.Component<IStartPageProps, IStartPageState> {
                             {"Log in"}
                         </div>
                         <div className={styles.middleText}>{"or"}</div>
-                        <div className={styles.button}>{"Sign up"}</div>
+                        <div
+                            className={styles.button}
+                            onClick={this.renderSignUpModal}
+                        >
+                            {"Sign up"}
+                        </div>
                     </div>
                     <div className={styles.linkContainer}>
                         <Link className={styles.link} to={"/posts"}>
@@ -72,8 +90,11 @@ class StartPage extends React.Component<IStartPageProps, IStartPageState> {
                         </Link>
                     </div>
                 </div>
+                {this.state.signUpModalOpened && (
+                        <SignUpModal closeModal={this.closeSignUpModal} setUserInfo={this.setUserInfo} />
+                    )}
                 {this.state.loginModalOpened && (
-                        <LoginModal closeModal={this.closeModal} setUserInfo={this.setUserInfo} />
+                        <LoginModal closeModal={this.closeLoginModal} setUserInfo={this.setUserInfo} />
                     )}
             </React.Fragment>
         );

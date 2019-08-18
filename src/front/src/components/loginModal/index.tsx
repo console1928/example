@@ -69,7 +69,8 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
                     })
                 .then(this.props.closeModal)
                 .catch(error => {
-                        console.error(error); this.setState({ credentialsAreWrong: true, loginIsPending: false })
+                        console.error(error);
+                        this.setState({ credentialsAreWrong: true, loginIsPending: false });
                     });
         }
     }
@@ -113,7 +114,10 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
                     </div>
                     <form className={styles.inputForm} onSubmit={this.login}>
                         <div className={styles.inputFieldContainer}>
-                            <div className={styles.inputFieldLabel}>{"User Name"}</div>
+                            <div className={styles.inputFieldLabel}>
+                                {"User Name"}
+                                <span className={styles.inputFieldRequired}>{" *"}</span>
+                            </div>
                             <input
                                 className={this.state.credentialsAreWrong ? styles.inputFieldError : styles.inputField}
                                 type={"text"}
@@ -123,7 +127,10 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
                             />
                         </div>
                         <div className={styles.inputFieldContainer}>
-                            <div className={styles.inputFieldLabel}>{"Password"}</div>
+                            <div className={styles.inputFieldLabel}>
+                                {"Password"}
+                                <span className={styles.inputFieldRequired}>{" *"}</span>
+                            </div>
                             <input
                                 className={this.state.credentialsAreWrong ? styles.inputFieldError : styles.inputField}
                                 type={"password"}
