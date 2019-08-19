@@ -14,19 +14,20 @@ const helpers = require("../../helpers/helpers");
  *     summary: Create post.
  *     produces:
  *       - application/json
- *     parameters:
- *       - in: query
- *         name: postName
- *         description: Post name.
- *         required: true
- *         schema:
- *           type: string
- *       - in: query
- *         name: postText
- *         description: Post text.
- *         required: true
- *         schema:
- *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               postName:
+ *                 type: string
+ *               postText:
+ *                 type: string
+ *             required:
+ *               - postName
+ *               - postText
  *     responses:
  *       200:
  *         description: Post created.
@@ -37,8 +38,8 @@ const helpers = require("../../helpers/helpers");
  */
 router.post("/create", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
-    let postName = req.query.postName || "";
-    let postText = req.query.postText || "";
+    let postName = req.body.postName || "";
+    let postText = req.body.postText || "";
     const postDate = Date.now();
 
     helpers.checkSession(cookie)

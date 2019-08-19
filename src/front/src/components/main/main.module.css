@@ -27,6 +27,31 @@
     animation: spin 1s infinite linear;
 }
 
+.createPostButton {
+    position: absolute;
+    top: 100px;
+    left: 85%;
+    color: #333;
+    cursor: pointer;
+    transition: 0.3s all;
+    z-index: 1;
+    font-size: 20px;
+}
+
+.createPostButton:hover {
+    color: mainColor;
+}
+
+.createPostButtonIcon,
+.createPostButtonText {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.createPostButtonText {
+    line-height: 20px;
+}
+
 @keyframes spin {
     from { transform:rotate(0deg); transform-origin: 25px 22px; }
     to { transform:rotate(359deg); transform-origin: 25px 22px; }

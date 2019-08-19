@@ -81,6 +81,22 @@ export default class Api {
                 });
     }
 
+    createPost: (postName: string, postText: string) => Promise<string | void> = (postName, postText) => {
+        const url: string = `/posts/create`;
+        return fetch(url, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ postName, postText }) })
+            .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.text();
+                })
+    }
+
     togglePostLike: (postId: string) => Promise<string | void> = (postId) => {
         const url: string = `/posts/toggleLike?postId=${postId}`;
         return fetch(url, { method: "post" })

@@ -9,7 +9,7 @@
     right: 0;
     background-color: rgba(0, 0, 0, 0.3);
     overflow-y: scroll;
-    z-index: 1;
+    z-index: 2;
 }
 
 .inputContainer {
@@ -114,6 +114,8 @@
 
 @media(max-width: 600px) {
     .inputContainer {
+        top: 0%;
+        transform: translate(-50%, 0%);
         max-width: 100%;
         border-radius: initial;
     }

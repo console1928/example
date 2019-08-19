@@ -70,7 +70,9 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
                         </div>
                     )}
                 </div>
-                {this.state.loginModalOpened && <LoginModal closeModal={this.closeModal} setUserInfo={this.setUserInfo} />}
+                {this.state.loginModalOpened && (
+                        <LoginModal closeModal={this.closeModal} setUserInfo={this.setUserInfo} />
+                    )}
             </React.Fragment>
         );
     }
