@@ -14,12 +14,11 @@
 
 .inputContainer {
     position: absolute;
-    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    height: 450px;
+    transform: translate(-50%, 0%);
+    min-height: 100%;
     width: 100%;
-    max-width: 500px;
+    max-width: 1000px;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
@@ -32,11 +31,12 @@
 
 .inputFieldContainer {
     display: block;
-    width: 50%;
+    width: 80%;
     margin: 30px auto;
 }
 
-.inputField {
+.inputField,
+.inputTextarea {
     outline: none;
     box-sizing: border-box;
     width: 100%;
@@ -45,9 +45,8 @@
     border: 1px solid #333;
 }
 
-.inputFieldError {
-    composes: inputField;
-    border: 1px solid #f00;
+.inputTextarea {
+    min-height: 200px;
 }
 
 .inputFieldLabel {
@@ -55,14 +54,6 @@
 }
 
 .inputFieldRequired {
-    color: #f00;
-}
-
-.wrongCredentialsMessageContainer {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50%;
     color: #f00;
 }
 
@@ -112,15 +103,8 @@
     to { transform:rotate(359deg); transform-origin: 25px 22px; }
 }
 
-@media(max-width: 600px) {
+@media(max-width: 1000px) {
     .inputContainer {
-        top: 0%;
-        transform: translate(-50%, 0%);
-        max-width: 100%;
         border-radius: initial;
-    }
-    
-    .inputFieldContainer {
-        width: 80%;
     }
 }

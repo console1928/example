@@ -12,10 +12,12 @@ interface ISignUpModalProps {
 interface ISignUpModalState {
     userName: string | null;
     password: string | null;
+    repeatedPassword: string | null;
     firstName: string | null;
     lastName: string | null;
     userPicture: string | null;
     signUpInfoIsWrong: boolean;
+    repeatedPasswordIsWrong: boolean;
     signUpIsPending: boolean;
 }
 
@@ -26,10 +28,12 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
         this.state = {
             userName: null,
             password: null,
+            repeatedPassword: null,
             firstName: null,
             lastName: null,
             userPicture: null,
             signUpInfoIsWrong: false,
+            repeatedPasswordIsWrong: false,
             signUpIsPending: false
         };
 
@@ -40,10 +44,12 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
         this.closeModal = this.closeModal.bind(this);
         this.setUserName = this.setUserName.bind(this);
         this.setPassword = this.setPassword.bind(this);
+        this.setRepeatedPassword = this.setRepeatedPassword.bind(this);
         this.setFirstName = this.setFirstName.bind(this);
         this.setLastName = this.setLastName.bind(this);
         this.setUserPicture = this.setUserPicture.bind(this);
         this.removeWrongSignUpInfoMessage = this.removeWrongSignUpInfoMessage.bind(this);
+        this.removeWrongRepeatedPasswordMessage = this.removeWrongRepeatedPasswordMessage.bind(this);
     }
 
     inputContainerRef: any = null;
@@ -66,23 +72,29 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
 
     signUp(event: React.FormEvent<HTMLFormElement>): void {
         event.preventDefault();
+        this.removeWrongRepeatedPasswordMessage();
         this.removeWrongSignUpInfoMessage();
-        const { userName, password, firstName, lastName, userPicture } = this.state;
-        if (userName && password && firstName && lastName) {
-            this.setState({ signUpIsPending: true });
-            this.Api
-                .signUp(userName, password, firstName, lastName, userPicture)
-                .then(() => this.Api.login(userName, password))
-                .then(this.Api.getUserInfo)
-                .then((userInfo: IUserInfo) => {
-                        this.setState({ signUpIsPending: false });
-                        this.props.setUserInfo(userInfo);
-                    })
-                .then(this.props.closeModal)
-                .catch(error => {
-                        console.error(error);
-                        this.setState({ signUpInfoIsWrong: true, signUpIsPending: false });
-                    });
+        const { userName, password, repeatedPassword, firstName, lastName, userPicture } = this.state;
+
+        if (userName && password && repeatedPassword && firstName && lastName) {
+            if (password === repeatedPassword) {
+                this.setState({ signUpIsPending: true });
+                this.Api
+                    .signUp(userName, password, firstName, lastName, userPicture)
+                    .then(() => this.Api.login(userName, password))
+                    .then(this.Api.getUserInfo)
+                    .then((userInfo: IUserInfo) => {
+                            this.setState({ signUpIsPending: false });
+                            this.props.setUserInfo(userInfo);
+                        })
+                    .then(this.props.closeModal)
+                    .catch(error => {
+                            console.error(error);
+                            this.setState({ signUpInfoIsWrong: true, signUpIsPending: false });
+                        });
+            } else {
+                this.setState({ repeatedPasswordIsWrong: true });
+            }
         }
     }
 
@@ -98,8 +110,16 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
 
     setPassword(event: React.FormEvent<HTMLDivElement>): void {
         const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
+        this.removeWrongRepeatedPasswordMessage();
         this.removeWrongSignUpInfoMessage();
         this.setState({ password: target.value });
+    }
+
+    setRepeatedPassword(event: React.FormEvent<HTMLDivElement>): void {
+        const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
+        this.removeWrongRepeatedPasswordMessage();
+        this.removeWrongSignUpInfoMessage();
+        this.setState({ repeatedPassword: target.value });
     }
 
     setFirstName(event: React.FormEvent<HTMLDivElement>): void {
@@ -123,6 +143,12 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
     removeWrongSignUpInfoMessage(): void {
         if (this.state.signUpInfoIsWrong) {
             this.setState({ signUpInfoIsWrong: false });
+        }
+    }
+
+    removeWrongRepeatedPasswordMessage(): void {
+        if (this.state.repeatedPasswordIsWrong) {
+            this.setState({ repeatedPasswordIsWrong: false });
         }
     }
 
@@ -170,6 +196,23 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
                         </div>
                         <div className={styles.inputFieldContainer}>
                             <div className={styles.inputFieldLabel}>
+                                {"Repeat password"}
+                                <span className={styles.inputFieldRequired}>{" *"}</span>
+                            </div>
+                            <input
+                                className={
+                                    (this.state.signUpInfoIsWrong || this.state.repeatedPasswordIsWrong)
+                                        ? styles.inputFieldError
+                                        : styles.inputField
+                                }
+                                type={"text"}
+                                required={true}
+                                onChange={this.setRepeatedPassword}
+                                value={this.state.repeatedPassword || ""}
+                            />
+                        </div>
+                        <div className={styles.inputFieldContainer}>
+                            <div className={styles.inputFieldLabel}>
                                 {"First Name"}
                                 <span className={styles.inputFieldRequired}>{" *"}</span>
                             </div>
@@ -204,9 +247,12 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
                                 value={this.state.userPicture || ""}
                             />
                         </div>
-                        <div className={styles.wrongSignUpInfoMessageContainer}>
+                        <div className={styles.errorMessageContainer}>
                             {this.state.signUpInfoIsWrong && (
-                                    <div className={styles.wrongSignUpInfoMessage}>{"Username already exists"}</div>
+                                    <div className={styles.errorMessage}>{"Username already exists"}</div>
+                                )}
+                            {this.state.repeatedPasswordIsWrong && (
+                                    <div className={styles.errorMessage}>{"Repeated password doesn't match the original"}</div>
                                 )}
                         </div>
                         <div className={styles.inputFieldContainer}>

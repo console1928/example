@@ -23,11 +23,11 @@ const helpers = require("../../helpers/helpers");
  *             properties:
  *               postName:
  *                 type: string
- *               postText:
+ *               postContent:
  *                 type: string
  *             required:
  *               - postName
- *               - postText
+ *               - postContent
  *     responses:
  *       200:
  *         description: Post created.
@@ -39,20 +39,20 @@ const helpers = require("../../helpers/helpers");
 router.post("/create", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
     let postName = req.body.postName || "";
-    let postText = req.body.postText || "";
+    let postContent = req.body.postContent || "";
     const postDate = Date.now();
 
     helpers.checkSession(cookie)
         .then(() => userModel.findOne({ "cookie": cookie }))
         .then(user => {
-            if (!postName || !postText) {
+            if (!postName || !postContent) {
                 throw new Error();
             } else {
                 const post = new postModel(
                     {
                         author: user._id,
                         name: postName,
-                        text: postText,
+                        text: postContent,
                         date: postDate,
                         comments: [],
                         likes: []

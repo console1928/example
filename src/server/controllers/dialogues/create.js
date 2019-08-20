@@ -42,7 +42,7 @@ router.post("/create", (req, res) => {
 
     helpers.checkSession(cookie)
         .then(() => {
-            if (!postName || !postText) {
+            if (!dialogueName) {
                 throw new Error();
             } else {
                 const dialogue = new dialogueModel(

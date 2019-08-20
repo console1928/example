@@ -81,14 +81,14 @@ export default class Api {
                 });
     }
 
-    createPost: (postName: string, postText: string) => Promise<string | void> = (postName, postText) => {
+    createPost: (postName: string, postContent: string) => Promise<string | void> = (postName, postContent) => {
         const url: string = `/posts/create`;
         return fetch(url, {
             method: "post",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ postName, postText }) })
+            body: JSON.stringify({ postName, postContent }) })
             .then(response => {
                     if (!response.ok) {
                         throw new Error(response.statusText);

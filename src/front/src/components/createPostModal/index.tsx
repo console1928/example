@@ -11,7 +11,7 @@ interface ICreatePostModalProps {
 
 interface ICreatePostModalState {
     postName: string | null;
-    postText: string | null;
+    postContent: string | null;
     createPostIsPending: boolean;
 }
 
@@ -21,7 +21,7 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
 
         this.state = {
             postName: null,
-            postText: null,
+            postContent: null,
             createPostIsPending: false
         };
 
@@ -31,7 +31,7 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
         this.createPost = this.createPost.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.setPostName = this.setPostName.bind(this);
-        this.setPostText = this.setPostText.bind(this);
+        this.setPostContent = this.setPostContent.bind(this);
     }
 
     inputContainerRef: any = null;
@@ -54,10 +54,10 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
 
     createPost(event: React.FormEvent<HTMLFormElement>): void {
         event.preventDefault();
-        if (this.state.postName && this.state.postText) {
+        if (this.state.postName && this.state.postContent) {
             this.setState({ createPostIsPending: true });
             this.Api
-                .createPost(this.state.postName, this.state.postText)
+                .createPost(this.state.postName, this.state.postContent)
                 .then(() => this.setState({ createPostIsPending: false }))
                 .then(() => {
                         this.props.showPostCreatedMessage();
@@ -81,9 +81,9 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
         this.setState({ postName: target.value });
     }
 
-    setPostText(event: React.FormEvent<HTMLDivElement>): void {
+    setPostContent(event: React.FormEvent<HTMLTextAreaElement>): void {
         const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
-        this.setState({ postText: target.value });
+        this.setState({ postContent: target.value });
     }
 
     render(): JSX.Element | null {
@@ -117,15 +117,14 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
                         </div>
                         <div className={styles.inputFieldContainer}>
                             <div className={styles.inputFieldLabel}>
-                                {"Post text"}
+                                {"Post content"}
                                 <span className={styles.inputFieldRequired}>{" *"}</span>
                             </div>
-                            <input
-                                className={styles.inputField}
-                                type={"text"}
+                            <textarea
+                                className={styles.inputTextarea}
                                 required={true}
-                                onChange={this.setPostText}
-                                value={this.state.postText || ""}
+                                onChange={this.setPostContent}
+                                value={this.state.postContent || ""}
                             />
                         </div>
                         <div className={styles.inputFieldContainer}>
