@@ -1,6 +1,6 @@
 import React from "react";
 import { FaCopyright } from "react-icons/fa";
-import { TiPlus } from "react-icons/ti";
+import { FaPlus, FaPlusCircle } from "react-icons/fa";
 import styles from "./main.module.css";
 import { IUserInfo, IPost } from "../../types";
 import Api from "../../api";
@@ -154,8 +154,9 @@ class Main extends React.Component<IMainProps, IMainState> {
                             className={styles.createPostButton}
                             onClick={this.openCreatePostModal}
                         >
-                            <TiPlus className={styles.createPostButtonIcon} />
-                            <div className={styles.createPostButtonText}>{" Create post"}</div>
+                            <FaPlus className={styles.createPostButtonIcon} />
+                            <div className={styles.createPostButtonText}>{"Create post"}</div>
+                            <FaPlusCircle className={styles.createPostButtonsmallScreen} />
                         </div>
                     )}
                 <div

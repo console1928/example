@@ -30,7 +30,7 @@
 .createPostButton {
     position: absolute;
     top: 100px;
-    left: 85%;
+    right: 5%;
     color: #333;
     cursor: pointer;
     transition: 0.3s all;
@@ -40,6 +40,10 @@
 
 .createPostButton:hover {
     color: mainColor;
+}
+
+.createPostButtonIcon {
+    margin-right: 5px;
 }
 
 .createPostButtonIcon,
@@ -52,7 +56,27 @@
     line-height: 20px;
 }
 
+.createPostButtonsmallScreen {
+    display: none;
+    font-size: 50px;
+}
+
 @keyframes spin {
     from { transform:rotate(0deg); transform-origin: 25px 22px; }
     to { transform:rotate(359deg); transform-origin: 25px 22px; }
+}
+
+@media(max-width: 1150px) {
+    .createPostButton {
+        right: 30px;
+    }
+
+    .createPostButtonIcon,
+    .createPostButtonText {
+        display: none;
+    }
+
+    .createPostButtonsmallScreen {
+        display: block;
+    }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaRegTimesCircle } from "react-icons/fa";
 import styles from "./post.module.css";
 import { IPost, IUserInfo } from "../../types";
 import Api from "../../api";
@@ -14,6 +14,7 @@ interface IPostProps {
 
 interface IPostState {
     postIsLiked: boolean;
+    postIsExpanded: boolean;
     postLikesCount: number;
     unauthenticatedMessageOpened: boolean;
 }
@@ -28,17 +29,39 @@ class Post extends React.Component<IPostProps, IPostState> {
                 this.props.userInfo &&
                 this.props.post.likes.indexOf(this.props.userInfo._id) !== -1
             ) || false,
+            postIsExpanded: false,
             postLikesCount: (this.props.post.likes && this.props.post.likes.length) || 0,
             unauthenticatedMessageOpened: false
         };
 
+        this.postContainerRef = null;
+
+        this.handleClickOutsidePostContainer = this.handleClickOutsidePostContainer.bind(this);
         this.handleLikePress = this.handleLikePress.bind(this);
         this.showUnauthenticatedMessage = this.showUnauthenticatedMessage.bind(this);
         this.closeUnauthenticatedMessage = this.closeUnauthenticatedMessage.bind(this);
         this.togglePostLike = this.togglePostLike.bind(this);
+        this.expandPost = this.expandPost.bind(this);
+        this.collapsePost = this.collapsePost.bind(this);
     }
 
+    postContainerRef: any = null;
+
     Api = new Api();
+
+    componentDidMount(): void {
+        document.addEventListener("mousedown", this.handleClickOutsidePostContainer);
+    }
+
+    componentWillUnmount(): void {
+        document.removeEventListener("mousedown", this.handleClickOutsidePostContainer);
+    }
+
+    handleClickOutsidePostContainer(event: UIEvent): void {
+        if (this.postContainerRef && !this.postContainerRef.contains(event.target)) {
+            this.collapsePost();
+          }
+    }
 
     componentDidUpdate(nextProps: IPostProps, nextState: IPostState): void {
         if (nextProps !== this.props) {
@@ -103,23 +126,40 @@ class Post extends React.Component<IPostProps, IPostState> {
         this.Api.togglePostLike(this.props.post._id);
     }
 
-    render(): JSX.Element | null {
+    expandPost(): void {
+        this.setState({ postIsExpanded: true });
+    }
+
+    collapsePost(): void {
+        this.setState({ postIsExpanded: false });
+    }
+
+    renderPost(): JSX.Element {
         return (
-            <div className={styles.container}>
+            <div
+                className={styles.container}
+                ref={ref => (this.postContainerRef = ref)}
+            >
                 <div className={styles.hat}>
                     <div className={styles.author}>{this.props.post.author}</div>
                     <div className={styles.date}>
                         {this.props.post.date && this.formatDate(this.props.post.date)}
                     </div>
+                    {this.state.postIsExpanded && (
+                        <div className={styles.collapsePostButton} onClick={this.collapsePost}>
+                            <FaRegTimesCircle />
+                        </div>)}
                 </div>
                 <div className={styles.name}>{this.props.post.name}</div>
-                <div className={styles.text}>
+                <div className={this.state.postIsExpanded ? styles.textExpanded : styles.text}>
                     <ReactMarkdown source={this.props.post.text} />
                 </div>
+                {!this.state.postIsExpanded && (<div className={styles.textShadow} />)}
                 <div className={styles.footer}>
-                    <div className={styles.readButton}>
-                        {"Read"}
-                    </div>
+                    {!this.state.postIsExpanded && (
+                        <div className={styles.expandPostButton} onClick={this.expandPost}>
+                            {"Read"}
+                        </div>)}
                     <div className={this.state.postIsLiked ? styles.likeContainerActive : styles.likeContainer}>
                         <div
                             className={this.props.userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
@@ -142,6 +182,18 @@ class Post extends React.Component<IPostProps, IPostState> {
                 </div>
             </div>
         );
+    }
+
+    renderPostExpanded(): JSX.Element {
+        return (
+            <div className={styles.modalContainer}>
+                {this.renderPost()}
+            </div>
+        );
+    }
+
+    render(): JSX.Element | null {
+        return this.state.postIsExpanded ? this.renderPostExpanded() : this.renderPost();
     }
 }
 
