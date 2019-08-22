@@ -1,4 +1,5 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import styles from "./post.module.css";
 import { IPost, IUserInfo } from "../../types";
@@ -112,8 +113,13 @@ class Post extends React.Component<IPostProps, IPostState> {
                     </div>
                 </div>
                 <div className={styles.name}>{this.props.post.name}</div>
-                <div className={styles.text}>{this.props.post.text}</div>
+                <div className={styles.text}>
+                    <ReactMarkdown source={this.props.post.text} />
+                </div>
                 <div className={styles.footer}>
+                    <div className={styles.readButton}>
+                        {"Read"}
+                    </div>
                     <div className={this.state.postIsLiked ? styles.likeContainerActive : styles.likeContainer}>
                         <div
                             className={this.props.userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
