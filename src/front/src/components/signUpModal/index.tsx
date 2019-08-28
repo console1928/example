@@ -157,7 +157,7 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
             <div className={styles.container}>
                 <div
                     className={styles.inputContainer}
-                    ref={ref => (this.inputContainerRef = ref)}
+                    ref={ref => this.inputContainerRef = ref}
                 >
                     <div className={styles.inputContainerHeader}>
                         <div
@@ -237,7 +237,7 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
                                 value={this.state.lastName || ""}
                             />
                         </div>
-                        <div className={styles.inputFieldContainer}>
+                        {/* <div className={styles.inputFieldContainer}>
                             <div className={styles.inputFieldLabel}>{"User Picture"}</div>
                             <input
                                 className={this.state.signUpInfoIsWrong ? styles.inputFieldError : styles.inputField}
@@ -246,7 +246,7 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
                                 onChange={this.setUserPicture}
                                 value={this.state.userPicture || ""}
                             />
-                        </div>
+                        </div> */}
                         <div className={styles.errorMessageContainer}>
                             {this.state.signUpInfoIsWrong && (
                                     <div className={styles.errorMessage}>{"Username already exists"}</div>

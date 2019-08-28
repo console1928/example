@@ -1,0 +1,110 @@
+@value variables: "../../../variables.css";
+@value mainColor from variables;
+
+.container {
+    margin: 30px 0px;
+}
+
+.userIcon {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 30px;
+    line-height: 50px;
+    vertical-align: middle;
+}
+
+.author {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.date {
+    display: inline-block;
+    margin-right: 40px;
+}
+
+.answerIcon {
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.answerButton {
+    display: inline-block;
+    margin-right: 20px;
+    color: #626262;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.answerButton:hover {
+    opacity: 1;
+}
+
+.unauthenticatedAnswerButton {
+    composes: answerButton;
+    cursor: default;
+    opacity: 1;
+}
+
+.likeContainer {
+    display: inline-block;
+}
+
+.likeButtonActive {
+    display: inline-block;
+    margin-right: 10px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.likeButtonDisabled {
+    composes: likeButtonActive;
+}
+
+.likeButtonDisabled:hover {
+    color: initial;
+}
+
+.likeButtonDisabled:active {
+    animation: none;
+}
+
+.likeCount {
+    display: inline-block;
+}
+
+.text {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+.inputFieldContainer {
+    margin: 40px 20px 60px;
+}
+
+.inputField {
+    display: inline-block;
+    height: 25px;
+    margin-right: 20px;
+    vertical-align: bottom;
+    outline: none;
+}
+
+.inputFieldButton {
+    display: inline-block;
+    color: #fff;
+    background-color: #333;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: 0.3s all;
+}
+
+.inputFieldButton:hover {
+    background-color: mainColor;
+}
+
+.inputButtonIcon {
+    margin-right: 5px;
+    font-size: 12px;
+}

@@ -1,37 +1,34 @@
 import React from "react";
 import { FaRegTimesCircle, FaCopyright } from "react-icons/fa";
-import styles from "./createPostModal.module.css";
+import styles from "./feedbackModal.module.css";
 import Api from "../../api";
 
-interface ICreatePostModalProps {
+interface IFeedbackModalProps {
     closeModal: () => void;
     showServerErrorMessage: () => void;
-    showPostCreatedMessage: () => void;
+    showFeedbackIsSentMessage: () => void;
 }
 
-interface ICreatePostModalState {
-    postName: string | null;
-    postContent: string | null;
-    createPostIsPending: boolean;
+interface IFeedbackModalState {
+    feedbackText: string | null;
+    feedbackIsPending: boolean;
 }
 
-class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePostModalState> {
-    constructor(props: ICreatePostModalProps, state: ICreatePostModalState) {
+class FeedbackModal extends React.Component<IFeedbackModalProps, IFeedbackModalState> {
+    constructor(props: IFeedbackModalProps, state: IFeedbackModalState) {
         super(props, state);
 
         this.state = {
-            postName: null,
-            postContent: null,
-            createPostIsPending: false
+            feedbackText: null,
+            feedbackIsPending: false
         };
 
         this.inputContainerRef = null;
 
         this.handleClickOutsideInputContainer = this.handleClickOutsideInputContainer.bind(this);
-        this.createPost = this.createPost.bind(this);
+        this.sendFeedback = this.sendFeedback.bind(this);
         this.closeModal = this.closeModal.bind(this);
-        this.setPostName = this.setPostName.bind(this);
-        this.setPostContent = this.setPostContent.bind(this);
+        this.setFeedbackText = this.setFeedbackText.bind(this);
     }
 
     inputContainerRef: any = null;
@@ -52,22 +49,22 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
           }
     }
 
-    createPost(event: React.FormEvent<HTMLFormElement>): void {
+    sendFeedback(event: React.FormEvent<HTMLFormElement>): void {
         event.preventDefault();
-        if (this.state.postName && this.state.postContent) {
-            this.setState({ createPostIsPending: true });
+        if (this.state.feedbackText) {
+            this.setState({ feedbackIsPending: true });
             this.Api
-                .createPost(this.state.postName, this.state.postContent)
-                .then(() => this.setState({ createPostIsPending: false }))
+                .sendFeedback(this.state.feedbackText)
+                .then(() => this.setState({ feedbackIsPending: false }))
                 .then(() => {
-                        this.props.showPostCreatedMessage();
+                        this.props.showFeedbackIsSentMessage();
                         this.props.closeModal();
                     })
                 .catch(error => {
                         console.error(error);
                         this.props.showServerErrorMessage();
                         this.props.closeModal();
-                        this.setState({ createPostIsPending: false });
+                        this.setState({ feedbackIsPending: false });
                     });
         }
     }
@@ -76,14 +73,9 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
         this.props.closeModal();
     }
 
-    setPostName(event: React.FormEvent<HTMLDivElement>): void {
+    setFeedbackText(event: React.FormEvent<HTMLTextAreaElement>): void {
         const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
-        this.setState({ postName: target.value });
-    }
-
-    setPostContent(event: React.FormEvent<HTMLTextAreaElement>): void {
-        const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
-        this.setState({ postContent: target.value });
+        this.setState({ feedbackText: target.value });
     }
 
     render(): JSX.Element | null {
@@ -98,38 +90,25 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
                             <FaRegTimesCircle />
                         </div>
                     </div>
-                    <form className={styles.inputForm} onSubmit={this.createPost}>
+                    <form className={styles.inputForm} onSubmit={this.sendFeedback}>
                         <div className={styles.inputFieldContainer}>
                             <div className={styles.inputFieldLabel}>
-                                {"Post Name"}
-                                <span className={styles.inputFieldRequired}>{" *"}</span>
-                            </div>
-                            <input
-                                className={styles.inputField}
-                                type={"text"}
-                                required={true}
-                                onChange={this.setPostName}
-                                value={this.state.postName || ""}
-                            />
-                        </div>
-                        <div className={styles.inputFieldContainer}>
-                            <div className={styles.inputFieldLabel}>
-                                {"Post content"}
+                                {"Leave your message here"}
                                 <span className={styles.inputFieldRequired}>{" *"}</span>
                             </div>
                             <textarea
                                 className={styles.inputTextarea}
                                 required={true}
-                                onChange={this.setPostContent}
-                                value={this.state.postContent || ""}
+                                onChange={this.setFeedbackText}
+                                value={this.state.feedbackText || ""}
                             />
                         </div>
                         <div className={styles.inputFieldContainer}>
-                            {this.state.createPostIsPending
+                            {this.state.feedbackIsPending
                                 ? (
                                     <div className={styles.spinner}><FaCopyright /></div>
                                 ) : (
-                                    <input className={styles.inputSubmit} type={"submit"} value={"Create post"} />
+                                    <input className={styles.inputSubmit} type={"submit"} value={"Send feedback"} />
                                 )}
                         </div>
                     </form>
@@ -139,4 +118,4 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
     }
 }
 
-export default CreatePostModal;
+export default FeedbackModal;

@@ -11,6 +11,10 @@ const createDialogue = require("./controllers/dialogues/create.js");
 const createPost = require("./controllers/posts/create.js");
 const queryPage = require("./controllers/posts/queryPage.js");
 const togglePostLike = require("./controllers/posts/toggleLike.js");
+const createComment = require("./controllers/posts/createComment.js");
+const queryComments = require("./controllers/posts/queryComments.js");
+const toggleCommentLike = require("./controllers/posts/toggleCommentLike.js");
+const sendFeedback = require("./controllers/utils/sendFeedback.js");
 const swagger = require("./controllers/swagger/swagger.js");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
@@ -35,6 +39,11 @@ app.use("/dialogues", createDialogue);
 app.use("/posts", createPost);
 app.use("/posts", queryPage);
 app.use("/posts", togglePostLike);
+app.use("/posts", createComment);
+app.use("/posts", queryComments);
+app.use("/posts", toggleCommentLike);
+app.use("/utils", sendFeedback);
+
 app.use("/api-docs", swagger);
 
 app.listen(config.port);

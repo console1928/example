@@ -38,7 +38,7 @@ class UnauthenticatedMessage extends React.Component<IUnauthenticatedMessageProp
         return (
             <div
                 className={styles.container}
-                ref={ref => (this.unauthenticatedMessageContainerRef = ref)}
+                ref={ref => this.unauthenticatedMessageContainerRef = ref}
             >
                 {"Log in or sign up to like"}
             </div>

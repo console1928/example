@@ -102,7 +102,7 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
             <div className={styles.container}>
                 <div
                     className={styles.inputContainer}
-                    ref={ref => (this.inputContainerRef = ref)}
+                    ref={ref => this.inputContainerRef = ref}
                 >
                     <div className={styles.inputContainerHeader}>
                         <div

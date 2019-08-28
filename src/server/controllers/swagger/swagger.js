@@ -22,7 +22,11 @@ const options = {
         "./controllers/dialogues/create.js",
         "./controllers/posts/create.js",
         "./controllers/posts/queryPage.js",
-        "./controllers/posts/toggleLike.js"
+        "./controllers/posts/toggleLike.js",
+        "./controllers/posts/createComment.js",
+        "./controllers/posts/queryComments.js",
+        "./controllers/posts/toggleCommentLike.js",
+        "./controllers/utils/sendFeedback.js"
     ]
 };
 

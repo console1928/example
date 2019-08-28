@@ -1,7 +1,6 @@
 @value variables: "../../variables.css";
 @value mainColor from variables;
 
-
 .container {
     box-sizing: border-box;
     width: 50%;
@@ -14,8 +13,16 @@
 }
 
 .hat {
-    padding: 20px;
+    padding: 15px 20px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.userIcon {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 30px;
+    line-height: 25px;
+    vertical-align: middle;
 }
 
 .author {
@@ -37,6 +44,7 @@
     padding: 20px;
     height: 100px;
     overflow: hidden;
+    font-size: 18px;
 }
 
 .textShadow {
@@ -50,6 +58,7 @@
 
 .textExpanded {
     padding: 20px;
+    font-size: 18px;
 }
 
 .footer {
@@ -119,11 +128,17 @@
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
 }
 
+.commentsTitle {
+    float: left;
+    line-height: 40px;
+    font-size: 20px;
+}
+
 .collapsePostButton {
     float: right;
-    margin-right: 10px;
     cursor: pointer;
     transition: 0.3s all;
+    line-height: 35px;
 }
 
 .collapsePostButton:hover {
@@ -139,6 +154,45 @@
     background-color: rgba(0, 0, 0, 0.3);
     overflow-y: scroll;
     z-index: 2;
+}
+
+.inputFieldContainer {
+    display: inline-block;
+    margin: 40px 20px 60px;
+}
+
+.inputUserIcon {
+    composes: userIcon;
+    font-size: 50px;
+}
+
+.inputField {
+    display: inline-block;
+    height: 25px;
+    margin-right: 20px;
+    vertical-align: middle;
+    outline: none;
+    min-width: 200px;
+}
+
+.inputFieldButton {
+    display: inline-block;
+    color: #fff;
+    background-color: #333;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: 0.3s all;
+    vertical-align: middle;
+}
+
+.inputFieldButton:hover {
+    background-color: mainColor;
+}
+
+.inputButtonIcon {
+    margin-right: 5px;
+    font-size: 12px;
 }
 
 @keyframes gradient {

@@ -43,7 +43,7 @@ class Toast extends React.Component<IToastProps, IToastState> {
 
     render(): JSX.Element | null {
         return (
-            <div className={styles.container} ref={ref => (this.toastContainerRef = ref)}>
+            <div className={styles.container} ref={ref => this.toastContainerRef = ref}>
                 <div className={styles.text}>{this.props.text}</div>
                 <div className={styles.closeToastButton} onClick={this.closeToast}><FaRegTimesCircle /></div>
             </div>

@@ -5,15 +5,14 @@ export interface IUserInfo {
     lastName: string;
     contacts: [];
     dialogues: [];
-    posts: IPost[];
+    posts: string[];
 }
 
-export interface IPostPreview {
+export interface IUserPublicInfo {
     _id: string;
-    author: string;
-    name: string;
-    text: string;
-    date: string;
+    firstName: string;
+    lastName: string;
+    posts: string[];
 }
 
 export interface IPost {
@@ -22,13 +21,15 @@ export interface IPost {
     name: string;
     text: string;
     date: string;
-    comments: [];
+    comments: string[];
     likes: string[];
 }
 
 export interface IPostComment {
+    _id: string;
     author: string;
     text: string;
-    comments: IPostComment[];
-    likes: [];
+    date: string;
+    comments: string[];
+    likes: string[];
 }

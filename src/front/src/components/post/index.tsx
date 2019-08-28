@@ -1,11 +1,13 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import { FaHeart, FaRegHeart, FaRegTimesCircle } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaRegTimesCircle, FaUserCircle } from "react-icons/fa";
 import styles from "./post.module.css";
 import { IPost, IUserInfo } from "../../types";
+import Helpers from "../../helpers";
 import Api from "../../api";
-import Comment from "../comment";
+import PostComments from "../postComments";
 import UnauthenticatedMessage from "../unauthenticatedMessage";
+import Toast from "../toast";
 
 interface IPostProps {
     userInfo: IUserInfo | null;
@@ -16,7 +18,11 @@ interface IPostState {
     postIsLiked: boolean;
     postIsExpanded: boolean;
     postLikesCount: number;
-    unauthenticatedMessageOpened: boolean;
+    unauthenticatedMessageIsOpened: boolean;
+    postCommentValue: string;
+    commentsAreLoading: boolean;
+    commentsContainerHeight: number | null;
+    errorMessageIsOpened: boolean;
 }
 
 class Post extends React.Component<IPostProps, IPostState> {
@@ -25,16 +31,23 @@ class Post extends React.Component<IPostProps, IPostState> {
 
         this.state = {
             postIsLiked: (
-                this.props.post.likes &&
                 this.props.userInfo &&
+                this.props.post &&
+                this.props.post.likes &&
                 this.props.post.likes.indexOf(this.props.userInfo._id) !== -1
             ) || false,
             postIsExpanded: false,
-            postLikesCount: (this.props.post.likes && this.props.post.likes.length) || 0,
-            unauthenticatedMessageOpened: false
+            postLikesCount: (this.props.post && this.props.post.likes && this.props.post.likes.length) || 0,
+            unauthenticatedMessageIsOpened: false,
+            postCommentValue: "",
+            commentsAreLoading: false,
+            commentsContainerHeight: null,
+            errorMessageIsOpened: false
         };
 
         this.postContainerRef = null;
+        this.postCommentsContainerRef = null;
+        this.postCommentsRef = null;
 
         this.handleClickOutsidePostContainer = this.handleClickOutsidePostContainer.bind(this);
         this.handleLikePress = this.handleLikePress.bind(this);
@@ -42,12 +55,25 @@ class Post extends React.Component<IPostProps, IPostState> {
         this.closeUnauthenticatedMessage = this.closeUnauthenticatedMessage.bind(this);
         this.togglePostLike = this.togglePostLike.bind(this);
         this.expandPost = this.expandPost.bind(this);
+        this.commentPost = this.commentPost.bind(this);
         this.collapsePost = this.collapsePost.bind(this);
+        this.setPostCommentValue = this.setPostCommentValue.bind(this);
+        this.sendComment = this.sendComment.bind(this);
+        this.commentsLoadingStarted = this.commentsLoadingStarted.bind(this);
+        this.commentsLoadingFinished = this.commentsLoadingFinished.bind(this);
+        this.openErrorMessage = this.openErrorMessage.bind(this);
+        this.closeErrorMessage = this.closeErrorMessage.bind(this);
+        this.onScroll = this.onScroll.bind(this);
+        this.onInputKeyPress = this.onInputKeyPress.bind(this);
     }
 
     postContainerRef: any = null;
+    postCommentsContainerRef: any = null;
+    postCommentsRef: any = null;
+    pendingCommentsNumber: number = 0;
 
     Api = new Api();
+    Helpers = new Helpers();
 
     componentDidMount(): void {
         document.addEventListener("mousedown", this.handleClickOutsidePostContainer);
@@ -60,47 +86,20 @@ class Post extends React.Component<IPostProps, IPostState> {
     handleClickOutsidePostContainer(event: UIEvent): void {
         if (this.postContainerRef && !this.postContainerRef.contains(event.target)) {
             this.collapsePost();
-          }
+        }
     }
 
-    componentDidUpdate(nextProps: IPostProps, nextState: IPostState): void {
-        if (nextProps !== this.props) {
+    componentDidUpdate(prevProps: IPostProps, prevState: IPostState): void {
+        if (prevProps !== this.props) {
             this.setState({
                 postIsLiked: (
-                    this.props.post.likes &&
                     this.props.userInfo &&
+                    this.props.post &&
+                    this.props.post.likes &&
                     this.props.post.likes.indexOf(this.props.userInfo._id) !== -1
                 ) || false
             });
         }
-    }
-
-    formatDate(dateString: string): string {
-        const monthNames: string[] = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
-        ];
-
-        const date: Date = new Date(dateString);
-        let hours: number | string = date.getHours();
-        if (hours < 10) { hours = "0" + hours; }
-        let minutes: number | string = date.getMinutes();
-        if (minutes < 10) { minutes = "0" + minutes; }
-        const day: number = date.getDate();
-        const month: number = date.getMonth();
-        const year: number = date.getFullYear();
-
-        return `${monthNames[month]} ${day}, ${year} at ${hours}:${minutes}`;
     }
 
     handleLikePress(): void {
@@ -112,38 +111,102 @@ class Post extends React.Component<IPostProps, IPostState> {
     }
 
     showUnauthenticatedMessage(): void {
-        this.setState({ unauthenticatedMessageOpened: true });
+        this.setState({ unauthenticatedMessageIsOpened: true });
     }
 
     closeUnauthenticatedMessage(): void {
-        this.setState({ unauthenticatedMessageOpened: false });
+        this.setState({ unauthenticatedMessageIsOpened: false });
     }
 
     togglePostLike(): void {
-        this.setState(
-            () => ({ postIsLiked: !this.state.postIsLiked }),
-            () => this.setState({ postLikesCount: this.state.postLikesCount + (this.state.postIsLiked ? 1 : -1) }));
-        this.Api.togglePostLike(this.props.post._id);
+        this.Api.togglePostLike(this.props.post._id)
+            .then(response => this.setState(
+                    () => ({ postIsLiked: !this.state.postIsLiked }),
+                    () => this.setState(
+                            { postLikesCount: this.state.postLikesCount + (this.state.postIsLiked ? 1 : -1) }
+                        )
+                ))
+            .catch(error => {
+                    console.error(error);
+                    this.openErrorMessage();
+                });
+    }
+
+    commentPost(commentText: string): void {
+        this.Api
+            .createComment("post", this.props.post._id, commentText)
+            .then(response => this.postCommentsRef.reloadPostComments())
+            .catch(error => console.error(error));
     }
 
     expandPost(): void {
         this.setState({ postIsExpanded: true });
+        this.pendingCommentsNumber = 0;
     }
 
     collapsePost(): void {
         this.setState({ postIsExpanded: false });
+        this.pendingCommentsNumber = 0;
+    }
+
+    setPostCommentValue(event: React.FormEvent<HTMLDivElement>): void {
+        const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
+        this.setState({ postCommentValue: target.value });
+    }
+
+    sendComment(): void {
+        if (this.state.postCommentValue !== "") {
+            this.commentPost(this.state.postCommentValue);
+            this.setState({ postCommentValue: "" });
+        }
+    }
+
+    onInputKeyPress(event: React.KeyboardEvent): void {
+        if (event.charCode === 13 && this.state.postCommentValue !== "") {
+            this.sendComment();
+        }
+    }
+
+    commentsLoadingStarted(): void {
+        this.pendingCommentsNumber += 1;
+        if (this.pendingCommentsNumber > 0) {
+            this.setState({ commentsAreLoading: true });
+            if (this.postCommentsContainerRef) {
+                this.setState({ commentsContainerHeight: this.postCommentsContainerRef.clientHeight });
+            }
+        }
+    }
+
+    commentsLoadingFinished(): void {
+        this.pendingCommentsNumber -= 1;
+        if (this.pendingCommentsNumber === 0) {
+            this.setState({ commentsAreLoading: false, commentsContainerHeight: null });
+        }
+    }
+
+    openErrorMessage(): void {
+        this.setState({ errorMessageIsOpened: true });
+    }
+
+    closeErrorMessage(): void {
+        this.setState({ errorMessageIsOpened: false });
+    }
+
+    onScroll(event: React.UIEvent<HTMLDivElement>): void {
+        event.stopPropagation();
     }
 
     renderPost(): JSX.Element {
         return (
             <div
                 className={styles.container}
-                ref={ref => (this.postContainerRef = ref)}
+                ref={ref => this.postContainerRef = ref}
             >
                 <div className={styles.hat}>
+                    <div className={styles.userIcon}><FaUserCircle /></div>
                     <div className={styles.author}>{this.props.post.author}</div>
                     <div className={styles.date}>
-                        {this.props.post.date && this.formatDate(this.props.post.date)}
+                        {this.props.post.date && this.Helpers.formatDate(this.props.post.date)}
                     </div>
                     {this.state.postIsExpanded && (
                         <div className={styles.collapsePostButton} onClick={this.collapsePost}>
@@ -156,10 +219,14 @@ class Post extends React.Component<IPostProps, IPostState> {
                 </div>
                 {!this.state.postIsExpanded && (<div className={styles.textShadow} />)}
                 <div className={styles.footer}>
-                    {!this.state.postIsExpanded && (
-                        <div className={styles.expandPostButton} onClick={this.expandPost}>
-                            {"Read"}
-                        </div>)}
+                    {!this.state.postIsExpanded ? (
+                            <div className={styles.expandPostButton} onClick={this.expandPost}>{"Read"}</div>
+                        ) : (
+                            this.props.post.comments &&
+                                this.props.post.comments.length > 0 && (
+                                        <div className={styles.commentsTitle}>{"Comments"}</div>
+                                    )
+                        )}
                     <div className={this.state.postIsLiked ? styles.likeContainerActive : styles.likeContainer}>
                         <div
                             className={this.props.userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
@@ -168,25 +235,63 @@ class Post extends React.Component<IPostProps, IPostState> {
                             {this.state.postIsLiked ? <FaHeart /> : <FaRegHeart />}
                         </div>
                         <div className={styles.likeCount}>{this.state.postLikesCount}</div>
-                        {this.state.unauthenticatedMessageOpened && (
-                            <UnauthenticatedMessage closeUnauthenticatedMessage={this.closeUnauthenticatedMessage} />)}
+                        {this.state.unauthenticatedMessageIsOpened && (
+                                <UnauthenticatedMessage
+                                    closeUnauthenticatedMessage={this.closeUnauthenticatedMessage}
+                                />
+                            )}
                     </div>
                 </div>
-                <div>
-                    {this.props.post.comments &&
-                        this.props.post.comments.map(
-                            (comment: any) => (
-                                <Comment comment={comment} />
-                            )
-                        )}
-                </div>
+                {this.state.postIsExpanded &&
+                    this.props.post &&
+                    this.props.post.comments && (
+                        <div
+                            ref={ref => this.postCommentsContainerRef = ref}
+                            style={{ height: this.state.commentsContainerHeight || "initial" }}
+                        >
+                            <PostComments
+                                ref={ref => this.postCommentsRef = ref}
+                                userInfo={this.props.userInfo}
+                                parent={this.props.post}
+                                parentType={"post"}
+                                commentsLoadingStarted={this.commentsLoadingStarted}
+                                commentsLoadingFinished={this.commentsLoadingFinished}
+                            />
+                        </div>)}
+                {this.state.postIsExpanded && (
+                        this.props.userInfo ? (
+                            <div className={styles.inputFieldContainer}>
+                                <div className={styles.inputUserIcon}><FaUserCircle /></div>
+                                <input
+                                    className={styles.inputField}
+                                    type={"text"}
+                                    required={true}
+                                    onChange={this.setPostCommentValue}
+                                    onKeyPress={this.onInputKeyPress}
+                                    value={this.state.postCommentValue}
+                                    placeholder={"Leave a comment"}
+                                />
+                                <div className={styles.inputFieldButton} onClick={this.sendComment}>{"send"}</div>
+                            </div>
+                        ) : (
+                            <div className={styles.unauthenticatedPostButton}>
+                                {"Log in or sign up to leave a comment"}
+                            </div>
+                        )
+                    )}
+                {this.state.errorMessageIsOpened && (
+                        <Toast
+                            text={"Network or server error: failed to like."}
+                            closeToast={this.closeErrorMessage}
+                        />
+                    )}
             </div>
         );
     }
 
     renderPostExpanded(): JSX.Element {
         return (
-            <div className={styles.modalContainer}>
+            <div className={styles.modalContainer} onScroll={this.onScroll}>
                 {this.renderPost()}
             </div>
         );

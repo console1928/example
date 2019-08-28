@@ -1,6 +1,6 @@
-import { IUserInfo, IPost } from "../types";
+import { IUserInfo, IPost, IPostComment } from "../types";
 
-export default class Api {
+class Api {
     signUp: (
         userName: string,
         password: string,
@@ -94,7 +94,7 @@ export default class Api {
                         throw new Error(response.statusText);
                     }
                     return response.text();
-                })
+                });
     }
 
     togglePostLike: (postId: string) => Promise<string | void> = (postId) => {
@@ -105,7 +105,64 @@ export default class Api {
                         throw new Error(response.statusText);
                     }
                     return response.text();
-                })
-            .catch(error => console.error(error));
+                });
+    }
+
+    queryComments: (parentType: "post" | "comment", parentId: string) => Promise<IPostComment[] | null> =
+        (parentType, parentId) => {
+            const url: string = `/posts/queryComments?parentType=${parentType}&parentId=${parentId}`;
+            return fetch(url, { method: "get" })
+                .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.json();
+                    });
+        }
+
+    createComment: (parentType: "post" | "comment", parentId: string, commentText: string) => Promise<string | void> =
+        (parentType, parentId, commentText) => {
+            const url: string = `/posts/createComment?parentType=${parentType}&parentId=${parentId}`;
+            return fetch(url, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ commentText }) })
+                .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.text();
+                    });
+        }
+
+    toggleCommentLike: (commentId: string) => Promise<string | void> = (commentId) => {
+        const url: string = `/posts/toggleCommentLike?commentId=${commentId}`;
+        return fetch(url, { method: "post" })
+            .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.text();
+                });
+    }
+
+    sendFeedback: (feedbackText: string) => Promise<string | void> = (feedbackText) => {
+        const url: string = `/utils/feedback`;
+        return fetch(url, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ feedbackText }) })
+            .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.text();
+                });
     }
 }
+
+export default Api;

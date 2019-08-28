@@ -13,11 +13,8 @@
 }
 
 .inputContainer {
-    position: absolute;
-    top: 30px;
-    left: 50%;
-    transform: translate(-50%, 0%);
-    min-height: 900px;
+    margin: 50px auto;
+    min-height: 750px;
     width: 100%;
     max-width: 500px;
     background-color: #fff;

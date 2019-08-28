@@ -1,12 +1,13 @@
 import React from "react";
 import { FaCopyright } from "react-icons/fa";
-import { FaPlus, FaPlusCircle } from "react-icons/fa";
+import { FaPlus, FaPlusCircle, FaCommentAlt } from "react-icons/fa";
 import styles from "./main.module.css";
 import { IUserInfo, IPost } from "../../types";
 import Api from "../../api";
 import Post from "../post";
 import TopBar from "../topBar";
 import CreatePostModal from "../createPostModal";
+import FeedbackModal from "../feedbackModal";
 import Toast from "../toast";
 
 interface IMainProps {
@@ -22,9 +23,11 @@ interface IMainState {
     scrolledToBottom: boolean;
     queryPostsPending: boolean;
     networkError: boolean;
-    createPostModalOpened: boolean;
-    serverErrorMessageOpened: boolean;
-    postCreatedMessageOpened: boolean;
+    createPostModalIsOpened: boolean;
+    serverErrorMessageIsOpened: boolean;
+    postCreatedMessageIsOpened: boolean;
+    feedbackModalIsOpened: boolean;
+    feedbackIsSentMessageIsOpened: boolean;
 }
 
 class Main extends React.Component<IMainProps, IMainState> {
@@ -39,9 +42,11 @@ class Main extends React.Component<IMainProps, IMainState> {
             scrolledToBottom: false,
             queryPostsPending: false,
             networkError: false,
-            createPostModalOpened: false,
-            serverErrorMessageOpened: false,
-            postCreatedMessageOpened: false
+            createPostModalIsOpened: false,
+            serverErrorMessageIsOpened: false,
+            postCreatedMessageIsOpened: false,
+            feedbackModalIsOpened: false,
+            feedbackIsSentMessageIsOpened: false
         };
 
         this.setUserInfo = this.setUserInfo.bind(this);
@@ -53,6 +58,10 @@ class Main extends React.Component<IMainProps, IMainState> {
         this.closeServerErrorMessage = this.closeServerErrorMessage.bind(this);
         this.openPostCreatedMessage = this.openPostCreatedMessage.bind(this);
         this.closePostCreatedMessage = this.closePostCreatedMessage.bind(this);
+        this.openFeedbackModal = this.openFeedbackModal.bind(this);
+        this.closeFeedbackModal = this.closeFeedbackModal.bind(this);
+        this.openFeedbackIsSentMessage = this.openFeedbackIsSentMessage.bind(this);
+        this.closeFeedbackIsSentMessage = this.closeFeedbackIsSentMessage.bind(this);
     }
 
     Api = new Api();
@@ -72,13 +81,14 @@ class Main extends React.Component<IMainProps, IMainState> {
             () => {
                 this.Api.queryPosts(this.state.postsStartNumber, postsTakeNumber, this.state.postsStartDate)
                     .then((posts: IPost[]) => {
-                            this.setState({ queryPostsPending: false });
+                            this.setState({ queryPostsPending: false, networkError: false });
                             if (posts) {
                                 if (posts.length % postsTakeNumber !== 0 || posts.length === 0) {
                                     this.setState(prevState => ({
                                             posts: prevState.posts.concat(posts),
                                             postsStartNumber: prevState.postsStartNumber + postsTakeNumber,
-                                            postsStartDate: prevState.postsStartDate ? prevState.postsStartDate : posts[0].date,
+                                            postsStartDate:
+                                                prevState.postsStartDate ? prevState.postsStartDate : posts[0].date,
                                             allPostsViewed: true
                                         })
                                     );
@@ -87,13 +97,19 @@ class Main extends React.Component<IMainProps, IMainState> {
                                             posts: prevState.posts.concat(posts),
                                             postsStartNumber: prevState.postsStartNumber + postsTakeNumber,
                                             scrolledToBottom: false,
-                                            postsStartDate: prevState.postsStartDate ? prevState.postsStartDate : posts[0].date
+                                            postsStartDate:
+                                                prevState.postsStartDate ? prevState.postsStartDate : posts[0].date
                                         })
                                     );
                                 }
                             }
                         })
-                    .catch(error => this.setState({ allPostsViewed: true, queryPostsPending: false, networkError: true }));
+                    .catch(
+                        error => this.setState({
+                                scrolledToBottom: true,
+                                queryPostsPending: false,
+                                networkError: true
+                            }));
             }
         );
     }
@@ -107,26 +123,34 @@ class Main extends React.Component<IMainProps, IMainState> {
     }
 
     openCreatePostModal(): void {
-        this.setState({ createPostModalOpened: true });
+        this.setState({ createPostModalIsOpened: true });
     }
 
     closeCreatePostModal(): void {
-        this.setState({ createPostModalOpened: false });
+        this.setState({ createPostModalIsOpened: false });
+    }
+
+    openFeedbackModal(): void {
+        this.setState({ feedbackModalIsOpened: true });
+    }
+
+    closeFeedbackModal(): void {
+        this.setState({ feedbackModalIsOpened: false });
     }
 
     openServerErrorMessage(): void {
-        this.setState({ serverErrorMessageOpened: true });
+        this.setState({ serverErrorMessageIsOpened: true });
     }
 
     closeServerErrorMessage(): void {
-        this.setState({ serverErrorMessageOpened: false });
+        this.setState({ serverErrorMessageIsOpened: false });
     }
 
     openPostCreatedMessage(): void {
         this.setState(
             () => ({
                 posts: [],
-                postCreatedMessageOpened: true,
+                postCreatedMessageIsOpened: true,
                 postsStartNumber: 0,
                 postsStartDate: null
             }),
@@ -135,28 +159,44 @@ class Main extends React.Component<IMainProps, IMainState> {
     }
 
     closePostCreatedMessage(): void {
-        this.setState({ postCreatedMessageOpened: false });
+        this.setState({ postCreatedMessageIsOpened: false });
+    }
+
+    openFeedbackIsSentMessage(): void {
+        this.setState({ feedbackIsSentMessageIsOpened: true });
+    }
+
+    closeFeedbackIsSentMessage(): void {
+        this.setState({ feedbackIsSentMessageIsOpened: false });
     }
 
     render(): JSX.Element | null {
         return (
             <React.Fragment>
                 <TopBar userInfo={this.props.userInfo} setUserInfo={this.setUserInfo} />
-                {this.state.createPostModalOpened && (
+                {this.state.createPostModalIsOpened && (
                         <CreatePostModal
                             closeModal={this.closeCreatePostModal}
                             showServerErrorMessage={this.openServerErrorMessage}
                             showPostCreatedMessage={this.openPostCreatedMessage}
                         />
                     )}
+                {this.state.feedbackModalIsOpened && (
+                        <FeedbackModal
+                            closeModal={this.closeFeedbackModal}
+                            showServerErrorMessage={this.openServerErrorMessage}
+                            showFeedbackIsSentMessage={this.openFeedbackIsSentMessage}
+                        />
+                    )}
+                <div className={styles.feedbackButtonContainer} onClick={this.openFeedbackModal}>
+                    <div className={styles.feedbackButton}>{"Feedback"}</div>
+                    <FaCommentAlt className={styles.feedbackButtonSmallScreen} />
+                </div>
                 {this.props.userInfo && (
-                        <div
-                            className={styles.createPostButton}
-                            onClick={this.openCreatePostModal}
-                        >
+                        <div className={styles.createPostButton} onClick={this.openCreatePostModal}>
                             <FaPlus className={styles.createPostButtonIcon} />
                             <div className={styles.createPostButtonText}>{"Create post"}</div>
-                            <FaPlusCircle className={styles.createPostButtonsmallScreen} />
+                            <FaPlusCircle className={styles.createPostButtonSmallScreen} />
                         </div>
                     )}
                 <div
@@ -164,7 +204,9 @@ class Main extends React.Component<IMainProps, IMainState> {
                     onScroll={this.onScroll}
                 >
                     {this.state.posts.length > 0 &&
-                        this.state.posts.map(post => <Post key={post._id} post={post} userInfo={this.props.userInfo} />)}
+                        this.state.posts.map(
+                            post => <Post key={post._id} post={post} userInfo={this.props.userInfo} />
+                        )}
                     <div className={styles.bottomLoaderContainer}>
                         {this.state.networkError ? (
                                 "Network error"
@@ -176,11 +218,17 @@ class Main extends React.Component<IMainProps, IMainState> {
                             )}
                     </div>
                 </div>
-                {this.state.postCreatedMessageOpened && (
+                {this.state.postCreatedMessageIsOpened && (
                         <Toast text={"Post Created."} closeToast={this.closePostCreatedMessage} />
                     )}
-                {this.state.serverErrorMessageOpened && (
-                        <Toast text={"Server error: failed to create post."} closeToast={this.closeServerErrorMessage} />
+                {this.state.feedbackIsSentMessageIsOpened && (
+                        <Toast text={"Feedback is sent."} closeToast={this.closeFeedbackIsSentMessage} />
+                    )}
+                {this.state.serverErrorMessageIsOpened && (
+                        <Toast
+                            text={"Network or server error."}
+                            closeToast={this.closeServerErrorMessage}
+                        />
                     )}
             </React.Fragment>
         );
