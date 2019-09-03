@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./postComments.module.css";
-import { IUserInfo, IPost, IPostComment } from "../../types";
+import { IUserInfo, IUserPublicInfo, IPost, IPostComment } from "../../types";
 import Api from "../../api";
 import PostComment from "./postComment";
 
@@ -12,6 +12,8 @@ interface IPostCommentsProps {
     parent: IPost | IPostComment;
     commentsLoadingStarted: () => void;
     commentsLoadingFinished: () => void;
+    usersPublicInfo: { [userId: string]: IUserPublicInfo };
+    updateUsersPublicInfo: (userId: string) => void;
 }
 
 interface IPostCommentsState {
@@ -28,6 +30,7 @@ class PostComments extends React.Component<IPostCommentsProps, IPostCommentsStat
 
         this.postCommentsContainerRef = null;
 
+        this.updateUsersPublicInfo = this.updateUsersPublicInfo.bind(this);
         this.queryComments = this.queryComments.bind(this);
         this.renderPostComments = this.renderPostComments.bind(this);
         this.reloadPostComments = this.reloadPostComments.bind(this);
@@ -39,8 +42,14 @@ class PostComments extends React.Component<IPostCommentsProps, IPostCommentsStat
     Api = new Api();
 
     componentDidMount(): void {
-        if (this.props.parent.comments && this.props.parent.comments.length > 0) {
+        if (this.props.parent.comments) {
             this.queryComments();
+        }
+    }
+
+    updateUsersPublicInfo(userId: string): void {
+        if (!this.props.usersPublicInfo.hasOwnProperty(userId)) {
+            this.props.updateUsersPublicInfo(userId);
         }
     }
 
@@ -72,6 +81,8 @@ class PostComments extends React.Component<IPostCommentsProps, IPostCommentsStat
                                     userInfo={this.props.userInfo}
                                     comment={comment}
                                     reloadPostComments={this.reloadPostComments}
+                                    usersPublicInfo={this.props.usersPublicInfo}
+                                    updateUsersPublicInfo={this.updateUsersPublicInfo}
                                 />
                                 <div className={styles.childComments}>
                                     <PostComments
@@ -80,6 +91,8 @@ class PostComments extends React.Component<IPostCommentsProps, IPostCommentsStat
                                         parentType={"comment"}
                                         commentsLoadingStarted={this.props.commentsLoadingStarted}
                                         commentsLoadingFinished={this.props.commentsLoadingFinished}
+                                        usersPublicInfo={this.props.usersPublicInfo}
+                                        updateUsersPublicInfo={this.updateUsersPublicInfo}
                                     />
                                 </div>
                             </React.Fragment>

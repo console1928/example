@@ -1,8 +1,7 @@
 import React from "react";
-import { FaCopyright } from "react-icons/fa";
-import { FaPlus, FaPlusCircle, FaCommentAlt } from "react-icons/fa";
+import { FaCopyright, FaPlus, FaPlusCircle, FaCommentAlt } from "react-icons/fa";
 import styles from "./main.module.css";
-import { IUserInfo, IPost } from "../../types";
+import { IUserInfo, IUserPublicInfo, IPost } from "../../types";
 import Api from "../../api";
 import Post from "../post";
 import TopBar from "../topBar";
@@ -13,6 +12,8 @@ import Toast from "../toast";
 interface IMainProps {
     userInfo: IUserInfo | null;
     setUserInfo: (userInfo: IUserInfo | null) => void;
+    usersPublicInfo: { [userId: string]: IUserPublicInfo };
+    updateUsersPublicInfo: (userId: string) => void;
 }
 
 interface IMainState {
@@ -50,6 +51,7 @@ class Main extends React.Component<IMainProps, IMainState> {
         };
 
         this.setUserInfo = this.setUserInfo.bind(this);
+        this.updateUsersPublicInfo = this.updateUsersPublicInfo.bind(this);
         this.queryPostsChunk = this.queryPostsChunk.bind(this);
         this.onScroll = this.onScroll.bind(this);
         this.openCreatePostModal = this.openCreatePostModal.bind(this);
@@ -72,6 +74,12 @@ class Main extends React.Component<IMainProps, IMainState> {
 
     setUserInfo(userInfo: IUserInfo | null): void {
         this.props.setUserInfo(userInfo);
+    }
+
+    updateUsersPublicInfo(userId: string): void {
+        if (!this.props.usersPublicInfo.hasOwnProperty(userId)) {
+            this.props.updateUsersPublicInfo(userId);
+        }
     }
 
     queryPostsChunk(): void {
@@ -205,7 +213,14 @@ class Main extends React.Component<IMainProps, IMainState> {
                 >
                     {this.state.posts.length > 0 &&
                         this.state.posts.map(
-                            post => <Post key={post._id} post={post} userInfo={this.props.userInfo} />
+                            post =>
+                                <Post
+                                    key={post._id}
+                                    post={post}
+                                    userInfo={this.props.userInfo}
+                                    usersPublicInfo={this.props.usersPublicInfo}
+                                    updateUsersPublicInfo={this.updateUsersPublicInfo}
+                                    />
                         )}
                     <div className={styles.bottomLoaderContainer}>
                         {this.state.networkError ? (

@@ -252,7 +252,9 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
                                     <div className={styles.errorMessage}>{"Username already exists"}</div>
                                 )}
                             {this.state.repeatedPasswordIsWrong && (
-                                    <div className={styles.errorMessage}>{"Repeated password doesn't match the original"}</div>
+                                    <div className={styles.errorMessage}>
+                                        {"Repeated password doesn't match the original"}
+                                    </div>
                                 )}
                         </div>
                         <div className={styles.inputFieldContainer}>

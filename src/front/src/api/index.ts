@@ -1,4 +1,4 @@
-import { IUserInfo, IPost, IPostComment } from "../types";
+import { IUserInfo, IUserPublicInfo, IPost, IPostComment } from "../types";
 
 class Api {
     signUp: (
@@ -69,17 +69,30 @@ class Api {
             .catch(error => console.error(error));
     }
 
-    queryPosts: (skip: number, limit: number, startDate: string | null) => Promise<IPost[]> = (skip, limit, startDate) => {
-        const queryStartDate: string = startDate ? `&startDate=${startDate}` : ``;
-        const url: string = `/posts/queryPage?skip=${skip}&limit=${limit}${queryStartDate}`;
+    getUserPublicInfo: (userId: string) => Promise<IUserPublicInfo> = (userId) => {
+        const url: string = `/users/userPublicInfo?userId=${userId}`;
         return fetch(url, { method: "get" })
             .then(response => {
                     if (!response.ok) {
                         throw new Error(response.statusText);
                     }
                     return response.json();
-                });
+                })
+            .catch(error => console.error(error));
     }
+
+    queryPosts: (skip: number, limit: number, startDate: string | null) => Promise<IPost[]> =
+        (skip, limit, startDate) => {
+            const queryStartDate: string = startDate ? `&startDate=${startDate}` : ``;
+            const url: string = `/posts/queryPage?skip=${skip}&limit=${limit}${queryStartDate}`;
+            return fetch(url, { method: "get" })
+                .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.json();
+                    });
+        }
 
     createPost: (postName: string, postContent: string) => Promise<string | void> = (postName, postContent) => {
         const url: string = `/posts/create`;

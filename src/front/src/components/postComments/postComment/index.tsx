@@ -1,7 +1,7 @@
 import React from "react";
 import { FaHeart, FaRegHeart, FaUserCircle, FaPen, FaPaperPlane } from "react-icons/fa";
 import styles from "./postComment.module.css";
-import { IUserInfo, IPostComment } from "../../../types";
+import { IUserInfo, IUserPublicInfo, IPostComment } from "../../../types";
 import Helpers from "../../../helpers";
 import Api from "../../../api";
 import UnauthenticatedMessage from "../../unauthenticatedMessage";
@@ -11,6 +11,8 @@ interface IPostCommentProps {
     userInfo: IUserInfo | null;
     comment: IPostComment;
     reloadPostComments: () => void;
+    usersPublicInfo: { [userId: string]: IUserPublicInfo };
+    updateUsersPublicInfo: (userId: string) => void;
 }
 
 interface IPostCommentState {
@@ -43,6 +45,7 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
 
         };
 
+        this.updateUsersPublicInfo = this.updateUsersPublicInfo.bind(this);
         this.handleLikePress = this.handleLikePress.bind(this);
         this.toggleCommentLike = this.toggleCommentLike.bind(this);
         this.answerComment = this.answerComment.bind(this);
@@ -58,14 +61,29 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
         this.onInputKeyPress = this.onInputKeyPress.bind(this);
     }
 
+    unauthenticatedMessageTimer: any = null;
+
     Api = new Api();
     Helpers = new Helpers();
+
+    componentDidMount(): void {
+        if (this.props.comment && this.props.comment.author) {
+            this.updateUsersPublicInfo(this.props.comment.author);
+        }
+    }
+
+    updateUsersPublicInfo(userId: string): void {
+        if (!this.props.usersPublicInfo.hasOwnProperty(userId)) {
+            this.props.updateUsersPublicInfo(userId);
+        }
+    }
 
     handleLikePress(): void {
         if (this.props.userInfo) {
             this.toggleCommentLike();
         } else {
             this.showUnauthenticatedMessage();
+            this.unauthenticatedMessageTimer = setTimeout(this.closeUnauthenticatedMessage, 3000);
         }
     }
 
@@ -96,6 +114,7 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
 
     closeUnauthenticatedMessage(): void {
         this.setState({ unauthenticatedMessageIsOpened: false });
+        clearTimeout(this.unauthenticatedMessageTimer);
     }
 
     setAnswerValue(event: React.FormEvent<HTMLDivElement>): void {
@@ -134,14 +153,19 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
     }
 
     renderPostComment(comment: IPostComment): JSX.Element {
+        const { userInfo, usersPublicInfo } = this.props;
         return (
             <div className={styles.container}>
                 <div className={styles.userIcon}><FaUserCircle /></div>
-                <div className={styles.author}>{comment.author}</div>
+                <div className={styles.author}>
+                    {usersPublicInfo && comment.author && usersPublicInfo[comment.author] && (
+                            `${usersPublicInfo[comment.author].firstName} ${usersPublicInfo[comment.author].lastName}`
+                        )}
+                </div>
                 <div className={styles.date}>
                     {comment.date && this.Helpers.formatDate(comment.date)}
                 </div>
-                {this.props.userInfo ? (
+                {userInfo ? (
                     <div
                         className={styles.answerButton}
                         onClick={this.openAnswerInput}
@@ -156,7 +180,7 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
                 )}
                 <div className={styles.likeContainer}>
                     <div
-                        className={this.props.userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
+                        className={userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
                         onClick={this.handleLikePress}
                     >
                         {this.state.commentIsLiked ? <FaHeart /> : <FaRegHeart />}

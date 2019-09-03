@@ -141,7 +141,9 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
                         </div>
                         <div className={styles.wrongCredentialsMessageContainer}>
                             {this.state.credentialsAreWrong && (
-                                    <div className={styles.wrongCredentialsMessage}>{"Wrong username or password"}</div>
+                                    <div className={styles.wrongCredentialsMessage}>
+                                        {"Wrong username or password"}
+                                    </div>
                                 )}
                         </div>
                         <div className={styles.inputFieldContainer}>

@@ -1,8 +1,8 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import { FaHeart, FaRegHeart, FaRegTimesCircle, FaUserCircle } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaRegTimesCircle, FaUserCircle, FaPaperPlane } from "react-icons/fa";
 import styles from "./post.module.css";
-import { IPost, IUserInfo } from "../../types";
+import { IPost, IUserInfo, IUserPublicInfo } from "../../types";
 import Helpers from "../../helpers";
 import Api from "../../api";
 import PostComments from "../postComments";
@@ -12,6 +12,8 @@ import Toast from "../toast";
 interface IPostProps {
     userInfo: IUserInfo | null;
     post: IPost;
+    usersPublicInfo: { [userId: string]: IUserPublicInfo };
+    updateUsersPublicInfo: (userId: string) => void;
 }
 
 interface IPostState {
@@ -49,6 +51,7 @@ class Post extends React.Component<IPostProps, IPostState> {
         this.postCommentsContainerRef = null;
         this.postCommentsRef = null;
 
+        this.updateUsersPublicInfo = this.updateUsersPublicInfo.bind(this);
         this.handleClickOutsidePostContainer = this.handleClickOutsidePostContainer.bind(this);
         this.handleLikePress = this.handleLikePress.bind(this);
         this.showUnauthenticatedMessage = this.showUnauthenticatedMessage.bind(this);
@@ -71,21 +74,15 @@ class Post extends React.Component<IPostProps, IPostState> {
     postCommentsContainerRef: any = null;
     postCommentsRef: any = null;
     pendingCommentsNumber: number = 0;
+    unauthenticatedMessageTimer: any = null;
 
     Api = new Api();
     Helpers = new Helpers();
 
     componentDidMount(): void {
         document.addEventListener("mousedown", this.handleClickOutsidePostContainer);
-    }
-
-    componentWillUnmount(): void {
-        document.removeEventListener("mousedown", this.handleClickOutsidePostContainer);
-    }
-
-    handleClickOutsidePostContainer(event: UIEvent): void {
-        if (this.postContainerRef && !this.postContainerRef.contains(event.target)) {
-            this.collapsePost();
+        if (this.props.post && this.props.post.author) {
+            this.updateUsersPublicInfo(this.props.post.author);
         }
     }
 
@@ -102,11 +99,28 @@ class Post extends React.Component<IPostProps, IPostState> {
         }
     }
 
+    componentWillUnmount(): void {
+        document.removeEventListener("mousedown", this.handleClickOutsidePostContainer);
+    }
+
+    handleClickOutsidePostContainer(event: UIEvent): void {
+        if (this.postContainerRef && !this.postContainerRef.contains(event.target)) {
+            this.collapsePost();
+        }
+    }
+
+    updateUsersPublicInfo(userId: string): void {
+        if (!this.props.usersPublicInfo.hasOwnProperty(userId)) {
+            this.props.updateUsersPublicInfo(userId);
+        }
+    }
+
     handleLikePress(): void {
         if (this.props.userInfo) {
             this.togglePostLike();
         } else {
             this.showUnauthenticatedMessage();
+            this.unauthenticatedMessageTimer = setTimeout(this.closeUnauthenticatedMessage, 3000);
         }
     }
 
@@ -116,6 +130,7 @@ class Post extends React.Component<IPostProps, IPostState> {
 
     closeUnauthenticatedMessage(): void {
         this.setState({ unauthenticatedMessageIsOpened: false });
+        clearTimeout(this.unauthenticatedMessageTimer);
     }
 
     togglePostLike(): void {
@@ -197,6 +212,7 @@ class Post extends React.Component<IPostProps, IPostState> {
     }
 
     renderPost(): JSX.Element {
+        const { userInfo, post, usersPublicInfo } = this.props;
         return (
             <div
                 className={styles.container}
@@ -204,32 +220,34 @@ class Post extends React.Component<IPostProps, IPostState> {
             >
                 <div className={styles.hat}>
                     <div className={styles.userIcon}><FaUserCircle /></div>
-                    <div className={styles.author}>{this.props.post.author}</div>
+                    <div className={styles.author}>
+                        {usersPublicInfo && post.author && usersPublicInfo[post.author] && (
+                            `${usersPublicInfo[post.author].firstName} ${usersPublicInfo[post.author].lastName}`)}
+                    </div>
                     <div className={styles.date}>
-                        {this.props.post.date && this.Helpers.formatDate(this.props.post.date)}
+                        {post.date && this.Helpers.formatDate(post.date)}
                     </div>
                     {this.state.postIsExpanded && (
                         <div className={styles.collapsePostButton} onClick={this.collapsePost}>
                             <FaRegTimesCircle />
                         </div>)}
                 </div>
-                <div className={styles.name}>{this.props.post.name}</div>
+                <div className={styles.name}>{post.name}</div>
                 <div className={this.state.postIsExpanded ? styles.textExpanded : styles.text}>
-                    <ReactMarkdown source={this.props.post.text} />
+                    <ReactMarkdown source={post.text} />
                 </div>
                 {!this.state.postIsExpanded && (<div className={styles.textShadow} />)}
                 <div className={styles.footer}>
                     {!this.state.postIsExpanded ? (
                             <div className={styles.expandPostButton} onClick={this.expandPost}>{"Read"}</div>
                         ) : (
-                            this.props.post.comments &&
-                                this.props.post.comments.length > 0 && (
+                            post.comments && (
                                         <div className={styles.commentsTitle}>{"Comments"}</div>
                                     )
                         )}
                     <div className={this.state.postIsLiked ? styles.likeContainerActive : styles.likeContainer}>
                         <div
-                            className={this.props.userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
+                            className={userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
                             onClick={this.handleLikePress}
                         >
                             {this.state.postIsLiked ? <FaHeart /> : <FaRegHeart />}
@@ -242,42 +260,45 @@ class Post extends React.Component<IPostProps, IPostState> {
                             )}
                     </div>
                 </div>
-                {this.state.postIsExpanded &&
-                    this.props.post &&
-                    this.props.post.comments && (
+                {this.state.postIsExpanded && post && post.comments && (
                         <div
                             ref={ref => this.postCommentsContainerRef = ref}
                             style={{ height: this.state.commentsContainerHeight || "initial" }}
                         >
                             <PostComments
                                 ref={ref => this.postCommentsRef = ref}
-                                userInfo={this.props.userInfo}
-                                parent={this.props.post}
+                                userInfo={userInfo}
+                                parent={post}
                                 parentType={"post"}
                                 commentsLoadingStarted={this.commentsLoadingStarted}
                                 commentsLoadingFinished={this.commentsLoadingFinished}
+                                usersPublicInfo={usersPublicInfo}
+                                updateUsersPublicInfo={this.updateUsersPublicInfo}
                             />
                         </div>)}
                 {this.state.postIsExpanded && (
-                        this.props.userInfo ? (
-                            <div className={styles.inputFieldContainer}>
-                                <div className={styles.inputUserIcon}><FaUserCircle /></div>
-                                <input
-                                    className={styles.inputField}
-                                    type={"text"}
-                                    required={true}
-                                    onChange={this.setPostCommentValue}
-                                    onKeyPress={this.onInputKeyPress}
-                                    value={this.state.postCommentValue}
-                                    placeholder={"Leave a comment"}
-                                />
-                                <div className={styles.inputFieldButton} onClick={this.sendComment}>{"send"}</div>
-                            </div>
-                        ) : (
-                            <div className={styles.unauthenticatedPostButton}>
-                                {"Log in or sign up to leave a comment"}
-                            </div>
-                        )
+                        <div className={styles.inputFieldContainer}>
+                            {userInfo ? (
+                                <React.Fragment>
+                                    <div className={styles.inputUserIcon}><FaUserCircle /></div>
+                                    <input
+                                        className={styles.inputField}
+                                        type={"text"}
+                                        required={true}
+                                        onChange={this.setPostCommentValue}
+                                        onKeyPress={this.onInputKeyPress}
+                                        value={this.state.postCommentValue}
+                                        placeholder={"Leave a comment"}
+                                    />
+                                    <div className={styles.inputFieldButton} onClick={this.sendComment}>
+                                        <FaPaperPlane className={styles.inputButtonIcon} />
+                                        {"send"}
+                                    </div>
+                                </React.Fragment>
+                            ) : (
+                                "Log in or sign up to leave a comment"
+                            )}
+                        </div>
                     )}
                 {this.state.errorMessageIsOpened && (
                         <Toast

@@ -10,9 +10,9 @@ export interface IUserInfo {
 
 export interface IUserPublicInfo {
     _id: string;
+    name: string;
     firstName: string;
     lastName: string;
-    posts: string[];
 }
 
 export interface IPost {

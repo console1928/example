@@ -5,13 +5,17 @@ interface IUnauthenticatedMessageProps {
     closeUnauthenticatedMessage: () => void;
 }
 
-interface IUnauthenticatedMessageState {}
+interface IUnauthenticatedMessageState {
+    container: HTMLDivElement | null;
+}
 
 class UnauthenticatedMessage extends React.Component<IUnauthenticatedMessageProps, IUnauthenticatedMessageState> {
     constructor(props: IUnauthenticatedMessageProps, state: IUnauthenticatedMessageState) {
         super(props, state);
 
-        this.state = {};
+        this.state = {
+            container: null
+        };
 
         this.unauthenticatedMessageContainerRef = null;
 
@@ -22,6 +26,7 @@ class UnauthenticatedMessage extends React.Component<IUnauthenticatedMessageProp
 
     componentDidMount(): void {
         document.addEventListener("mousedown", this.handleClickOutsideInputContainer);
+        this.setState({ container: this.unauthenticatedMessageContainerRef });
     }
 
     componentWillUnmount(): void {
@@ -29,14 +34,21 @@ class UnauthenticatedMessage extends React.Component<IUnauthenticatedMessageProp
     }
 
     handleClickOutsideInputContainer(event: UIEvent): void {
-        if (this.unauthenticatedMessageContainerRef && !this.unauthenticatedMessageContainerRef.contains(event.target)) {
+        if (
+            this.unauthenticatedMessageContainerRef &&
+                !this.unauthenticatedMessageContainerRef.contains(event.target)
+        ) {
             this.props.closeUnauthenticatedMessage();
-          }
+        }
     }
 
     render(): JSX.Element | null {
         return (
             <div
+                style={{
+                    marginLeft: `-${this.state.container ? this.state.container.clientWidth : 0}px`,
+                    marginTop: `-${this.state.container ? this.state.container.clientHeight : 0}px`
+                }}
                 className={styles.container}
                 ref={ref => this.unauthenticatedMessageContainerRef = ref}
             >

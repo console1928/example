@@ -46,7 +46,7 @@ class FeedbackModal extends React.Component<IFeedbackModalProps, IFeedbackModalS
     handleClickOutsideInputContainer(event: UIEvent): void {
         if (this.inputContainerRef && !this.inputContainerRef.contains(event.target)) {
             this.closeModal();
-          }
+        }
     }
 
     sendFeedback(event: React.FormEvent<HTMLFormElement>): void {
@@ -105,11 +105,8 @@ class FeedbackModal extends React.Component<IFeedbackModalProps, IFeedbackModalS
                         </div>
                         <div className={styles.inputFieldContainer}>
                             {this.state.feedbackIsPending
-                                ? (
-                                    <div className={styles.spinner}><FaCopyright /></div>
-                                ) : (
-                                    <input className={styles.inputSubmit} type={"submit"} value={"Send feedback"} />
-                                )}
+                                ? <div className={styles.spinner}><FaCopyright /></div>
+                                : <input className={styles.inputSubmit} type={"submit"} value={"Send feedback"} />}
                         </div>
                     </form>
                 </div>
