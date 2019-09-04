@@ -29,6 +29,12 @@ const postModel = require("../../models/post");
  *         required: false
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: searchValue
+ *         description: Search value.
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Posts chunk acquired.
@@ -41,14 +47,24 @@ router.get("/queryPage", (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip) : 0;
     const limit = req.query.limit ? parseInt(req.query.limit) : 0;
     const startDate = req.query.startDate || Date.now();
+    const searchValues = typeof req.query.searchValue === "string" ? [req.query.searchValue] : req.query.searchValue;
+    const regexArray = searchValues
+            ? searchValues.map(searchValue => new RegExp(searchValue.replace(/[!@#$%^&*\\]/g, ""), "i"))
+            : [new RegExp()];
 
     if (limit > 0 && limit <= 20) {
         postModel
-            .find({ date: { $lte : new Date(startDate) } })
+            .find({
+                date: { $lte : new Date(startDate) },
+                $or: [
+                    { name: { $in : regexArray } },
+                    { text: { $in : regexArray } }
+                ]
+            })
             .sort({ $natural: -1 })
             .skip(skip)
             .limit(limit)
-            .then(post => res.status(200).send(JSON.stringify(post)))
+            .then(posts => res.status(200).send(JSON.stringify(posts)))
             .catch(error => res.sendStatus(400));
     } else {
         res.sendStatus(400);

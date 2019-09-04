@@ -29,6 +29,7 @@ interface IMainState {
     postCreatedMessageIsOpened: boolean;
     feedbackModalIsOpened: boolean;
     feedbackIsSentMessageIsOpened: boolean;
+    searchValue: string;
 }
 
 class Main extends React.Component<IMainProps, IMainState> {
@@ -47,7 +48,8 @@ class Main extends React.Component<IMainProps, IMainState> {
             serverErrorMessageIsOpened: false,
             postCreatedMessageIsOpened: false,
             feedbackModalIsOpened: false,
-            feedbackIsSentMessageIsOpened: false
+            feedbackIsSentMessageIsOpened: false,
+            searchValue: ""
         };
 
         this.setUserInfo = this.setUserInfo.bind(this);
@@ -64,12 +66,13 @@ class Main extends React.Component<IMainProps, IMainState> {
         this.closeFeedbackModal = this.closeFeedbackModal.bind(this);
         this.openFeedbackIsSentMessage = this.openFeedbackIsSentMessage.bind(this);
         this.closeFeedbackIsSentMessage = this.closeFeedbackIsSentMessage.bind(this);
+        this.onSearch = this.onSearch.bind(this);
     }
 
     Api = new Api();
 
     componentDidMount(): void {
-        this.queryPostsChunk();
+        this.queryPostsChunk(this.state.searchValue);
     }
 
     setUserInfo(userInfo: IUserInfo | null): void {
@@ -82,12 +85,12 @@ class Main extends React.Component<IMainProps, IMainState> {
         }
     }
 
-    queryPostsChunk(): void {
+    queryPostsChunk(searchValue: string): void {
         const postsTakeNumber: number = 5;
         this.setState(
             () => ({ queryPostsPending: true }),
             () => {
-                this.Api.queryPosts(this.state.postsStartNumber, postsTakeNumber, this.state.postsStartDate)
+                this.Api.queryPosts(this.state.postsStartNumber, postsTakeNumber, this.state.postsStartDate, searchValue)
                     .then((posts: IPost[]) => {
                             this.setState({ queryPostsPending: false, networkError: false });
                             if (posts) {
@@ -96,7 +99,10 @@ class Main extends React.Component<IMainProps, IMainState> {
                                             posts: prevState.posts.concat(posts),
                                             postsStartNumber: prevState.postsStartNumber + postsTakeNumber,
                                             postsStartDate:
-                                                prevState.postsStartDate ? prevState.postsStartDate : posts[0].date,
+                                                prevState.postsStartDate
+                                                    ? prevState.postsStartDate
+                                                    : posts[0] ? posts[0].date : null,
+                                            scrolledToBottom: true,
                                             allPostsViewed: true
                                         })
                                     );
@@ -106,7 +112,9 @@ class Main extends React.Component<IMainProps, IMainState> {
                                             postsStartNumber: prevState.postsStartNumber + postsTakeNumber,
                                             scrolledToBottom: false,
                                             postsStartDate:
-                                                prevState.postsStartDate ? prevState.postsStartDate : posts[0].date
+                                                prevState.postsStartDate
+                                                    ? prevState.postsStartDate
+                                                    : posts[0] ? posts[0].date : null
                                         })
                                     );
                                 }
@@ -126,7 +134,7 @@ class Main extends React.Component<IMainProps, IMainState> {
         const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
         const scrolledToBottom: boolean = target.scrollHeight - Math.ceil(target.scrollTop) === target.clientHeight;
         if (scrolledToBottom && !this.state.allPostsViewed && !this.state.queryPostsPending) {
-            this.setState(() => ({ scrolledToBottom: true }), () => this.queryPostsChunk());
+            this.setState(() => ({ scrolledToBottom: true }), () => this.queryPostsChunk(this.state.searchValue));
         }
     }
 
@@ -160,9 +168,13 @@ class Main extends React.Component<IMainProps, IMainState> {
                 posts: [],
                 postCreatedMessageIsOpened: true,
                 postsStartNumber: 0,
-                postsStartDate: null
+                postsStartDate: null,
+                allPostsViewed: false,
+                scrolledToBottom: false,
+                queryPostsPending: false,
+                networkError: false
             }),
-            () => this.queryPostsChunk()
+            () => this.queryPostsChunk(this.state.searchValue)
         );
     }
 
@@ -178,10 +190,28 @@ class Main extends React.Component<IMainProps, IMainState> {
         this.setState({ feedbackIsSentMessageIsOpened: false });
     }
 
+    onSearch(searchValue: string): void {
+        this.setState(
+            () => ({
+                    posts: [],
+                    postsStartDate: null,
+                    postsStartNumber: 0,
+                    allPostsViewed: false,
+                    scrolledToBottom: false,
+                    queryPostsPending: false,
+                    networkError: false,
+                    searchValue
+                }),
+            () => {
+                this.queryPostsChunk(this.state.searchValue);
+            }
+        );
+    }
+
     render(): JSX.Element | null {
         return (
             <React.Fragment>
-                <TopBar userInfo={this.props.userInfo} setUserInfo={this.setUserInfo} />
+                <TopBar userInfo={this.props.userInfo} setUserInfo={this.setUserInfo} onSearch={this.onSearch} />
                 {this.state.createPostModalIsOpened && (
                         <CreatePostModal
                             closeModal={this.closeCreatePostModal}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaHome, FaSignInAlt, FaSignOutAlt, FaUserCircle } from "react-icons/fa";
+import { FaHome, FaSignInAlt, FaSignOutAlt, FaUserCircle, FaSearch } from "react-icons/fa";
 import styles from "./topBar.module.css";
 import { IUserInfo } from "../../types";
 import Api from "../../api";
@@ -9,10 +9,13 @@ import LoginModal from "../loginModal";
 interface ITopBarProps {
     userInfo: IUserInfo | null;
     setUserInfo: (userInfo: IUserInfo | null) => void;
+    onSearch: (searchValue: string) => void;
 }
 
 interface ITopBarState {
     loginModalOpened: boolean;
+    searchValue: string;
+    searchInputIsActive: boolean;
 }
 
 class TopBar extends React.Component<ITopBarProps, ITopBarState> {
@@ -20,13 +23,19 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
         super(props, state);
 
         this.state = {
-            loginModalOpened: false
+            loginModalOpened: false,
+            searchValue: "",
+            searchInputIsActive: false
         };
 
         this.renderLoginModal = this.renderLoginModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.setUserInfo = this.setUserInfo.bind(this);
         this.logout = this.logout.bind(this);
+        this.setSearchValue = this.setSearchValue.bind(this);
+        this.onSearchKeyPress = this.onSearchKeyPress.bind(this);
+        this.onSearchInputFocus = this.onSearchInputFocus.bind(this);
+        this.onSearchInputBlur = this.onSearchInputBlur.bind(this);
     }
 
     Api = new Api();
@@ -46,6 +55,27 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
     logout(): void {
         this.Api.logout()
             .then(() => this.setUserInfo(null));
+    }
+
+    setSearchValue(event: React.FormEvent<HTMLDivElement>): void {
+        const target: HTMLInputElement = event.target as HTMLInputElement;
+        this.setState({ searchValue: target.value });
+    }
+
+    onSearchKeyPress(event: React.KeyboardEvent): void {
+        if (event.charCode === 13) {
+            this.props.onSearch(this.state.searchValue);
+        }
+    }
+
+    onSearchInputFocus(): void {
+        this.setState({ searchInputIsActive: true });
+    }
+
+    onSearchInputBlur(): void {
+        if (!this.state.searchValue) {
+            this.setState({ searchInputIsActive: false });
+        }
     }
 
     render(): JSX.Element | null {
@@ -71,6 +101,21 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
                             <div className={styles.signInIcon} onClick={this.renderLoginModal}><FaSignInAlt /></div>
                         </div>
                     )}
+                    <div className={styles.searchInputContainer}>
+                        <div className={this.state.searchInputIsActive ? styles.searchIconActive : styles.searchIcon}>
+                            <FaSearch />
+                        </div>
+                        <input
+                            className={this.state.searchInputIsActive ? styles.searchInputActive : styles.searchInput}
+                            type={"text"}
+                            onChange={this.setSearchValue}
+                            onKeyPress={this.onSearchKeyPress}
+                            onFocus={this.onSearchInputFocus}
+                            onBlur={this.onSearchInputBlur}
+                            value={this.state.searchValue || ""}
+                            placeholder={"Search"}
+                        />
+                    </div>
                 </div>
                 {this.state.loginModalOpened && (
                         <LoginModal closeModal={this.closeModal} setUserInfo={this.setUserInfo} />

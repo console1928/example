@@ -81,10 +81,12 @@ class Api {
             .catch(error => console.error(error));
     }
 
-    queryPosts: (skip: number, limit: number, startDate: string | null) => Promise<IPost[]> =
-        (skip, limit, startDate) => {
+    queryPosts: (skip: number, limit: number, startDate: string | null, searchValue: string) => Promise<IPost[]> =
+        (skip, limit, startDate, searchValue) => {
             const queryStartDate: string = startDate ? `&startDate=${startDate}` : ``;
-            const url: string = `/posts/queryPage?skip=${skip}&limit=${limit}${queryStartDate}`;
+            const searchValues: string =
+                searchValue.trim() !== "" ? `&searchValue=${searchValue.split(" ").join("&searchValue=")}` : "";
+            const url: string = `/posts/queryPage?skip=${skip}&limit=${limit}${queryStartDate}${searchValues}`;
             return fetch(url, { method: "get" })
                 .then(response => {
                         if (!response.ok) {

@@ -46,6 +46,7 @@
 
 .inputTextarea {
     min-height: 200px;
+    resize: vertical;
 }
 
 .inputFieldLabel {
