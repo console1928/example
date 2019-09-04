@@ -84,8 +84,9 @@ class Api {
     queryPosts: (skip: number, limit: number, startDate: string | null, searchValue: string) => Promise<IPost[]> =
         (skip, limit, startDate, searchValue) => {
             const queryStartDate: string = startDate ? `&startDate=${startDate}` : ``;
-            const searchValues: string =
-                searchValue.trim() !== "" ? `&searchValue=${searchValue.split(" ").join("&searchValue=")}` : "";
+            const searchValues: string = searchValue.trim() !== ""
+                ? `&searchValue=${searchValue.trim().split(" ").filter(value => value !== "").join("&searchValue=")}`
+                : "";
             const url: string = `/posts/queryPage?skip=${skip}&limit=${limit}${queryStartDate}${searchValues}`;
             return fetch(url, { method: "get" })
                 .then(response => {
