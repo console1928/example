@@ -1,15 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter, RouteComponentProps } from "react-router-dom";
 import { FaHome, FaSignInAlt, FaSignOutAlt, FaUserCircle, FaSearch } from "react-icons/fa";
 import styles from "./topBar.module.css";
 import { IUserInfo } from "../../types";
 import Api from "../../api";
 import LoginModal from "../loginModal";
 
-interface ITopBarProps {
+interface ITopBarProps extends RouteComponentProps {
     userInfo: IUserInfo | null;
     setUserInfo: (userInfo: IUserInfo | null) => void;
-    onSearch: (searchValue: string) => void;
+    onSearch?: (searchValue: string) => void;
 }
 
 interface ITopBarState {
@@ -63,7 +63,7 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
     }
 
     onSearchKeyPress(event: React.KeyboardEvent): void {
-        if (event.charCode === 13) {
+        if (event.charCode === 13 && this.props.onSearch) {
             this.props.onSearch(this.state.searchValue);
         }
     }
@@ -88,12 +88,17 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
                                 <div className={styles.homeIcon}><FaHome /></div>
                             </Link>
                         </div>)}
+                    {this.props.location &&
+                        this.props.location.pathname !== "/posts" && (
+                            <Link className={styles.postsLink} to={"/posts"}>{"Jump to blog"}</Link>)}
                     {this.props.userInfo ? (
                         <div className={styles.signOutContainer}>
-                            <div className={styles.userIcon}><FaUserCircle /></div>
-                            <div className={styles.userName}>
-                                {`${this.props.userInfo.firstName} ${this.props.userInfo.lastName}`}
-                            </div>
+                            <Link className={styles.userLink} to={`/user/${this.props.userInfo._id}`}>
+                                <div className={styles.userIcon}><FaUserCircle /></div>
+                                <div className={styles.userName}>
+                                    {`${this.props.userInfo.firstName} ${this.props.userInfo.lastName}`}
+                                </div>
+                            </Link>
                             <div className={styles.signOutIcon} onClick={this.logout}><FaSignOutAlt /></div>
                         </div>
                     ) : (
@@ -101,21 +106,33 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
                             <div className={styles.signInIcon} onClick={this.renderLoginModal}><FaSignInAlt /></div>
                         </div>
                     )}
-                    <div className={styles.searchInputContainer}>
-                        <div className={this.state.searchInputIsActive ? styles.searchIconActive : styles.searchIcon}>
-                            <FaSearch />
-                        </div>
-                        <input
-                            className={this.state.searchInputIsActive ? styles.searchInputActive : styles.searchInput}
-                            type={"text"}
-                            onChange={this.setSearchValue}
-                            onKeyPress={this.onSearchKeyPress}
-                            onFocus={this.onSearchInputFocus}
-                            onBlur={this.onSearchInputBlur}
-                            value={this.state.searchValue || ""}
-                            placeholder={"Search"}
-                        />
-                    </div>
+                    {this.props.location &&
+                        this.props.location.pathname === "/posts" && (
+                            <div className={styles.searchInputContainer}>
+                                <div
+                                    className={
+                                        this.state.searchInputIsActive
+                                            ? styles.searchIconActive
+                                            : styles.searchIcon
+                                    }
+                                >
+                                    <FaSearch />
+                                </div>
+                                <input
+                                    className={
+                                        this.state.searchInputIsActive
+                                            ? styles.searchInputActive
+                                            : styles.searchInput
+                                    }
+                                    type={"text"}
+                                    onChange={this.setSearchValue}
+                                    onKeyPress={this.onSearchKeyPress}
+                                    onFocus={this.onSearchInputFocus}
+                                    onBlur={this.onSearchInputBlur}
+                                    value={this.state.searchValue || ""}
+                                    placeholder={"Search"}
+                                />
+                            </div>)}
                 </div>
                 {this.state.loginModalOpened && (
                         <LoginModal closeModal={this.closeModal} setUserInfo={this.setUserInfo} />
@@ -125,4 +142,4 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
     }
 }
 
-export default TopBar;
+export default withRouter(TopBar);

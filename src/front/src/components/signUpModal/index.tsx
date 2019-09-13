@@ -15,7 +15,6 @@ interface ISignUpModalState {
     repeatedPassword: string | null;
     firstName: string | null;
     lastName: string | null;
-    userPicture: string | null;
     signUpInfoIsWrong: boolean;
     repeatedPasswordIsWrong: boolean;
     signUpIsPending: boolean;
@@ -31,7 +30,6 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
             repeatedPassword: null,
             firstName: null,
             lastName: null,
-            userPicture: null,
             signUpInfoIsWrong: false,
             repeatedPasswordIsWrong: false,
             signUpIsPending: false
@@ -47,7 +45,6 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
         this.setRepeatedPassword = this.setRepeatedPassword.bind(this);
         this.setFirstName = this.setFirstName.bind(this);
         this.setLastName = this.setLastName.bind(this);
-        this.setUserPicture = this.setUserPicture.bind(this);
         this.removeWrongSignUpInfoMessage = this.removeWrongSignUpInfoMessage.bind(this);
         this.removeWrongRepeatedPasswordMessage = this.removeWrongRepeatedPasswordMessage.bind(this);
     }
@@ -74,13 +71,13 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
         event.preventDefault();
         this.removeWrongRepeatedPasswordMessage();
         this.removeWrongSignUpInfoMessage();
-        const { userName, password, repeatedPassword, firstName, lastName, userPicture } = this.state;
+        const { userName, password, repeatedPassword, firstName, lastName } = this.state;
 
         if (userName && password && repeatedPassword && firstName && lastName) {
             if (password === repeatedPassword) {
                 this.setState({ signUpIsPending: true });
                 this.Api
-                    .signUp(userName, password, firstName, lastName, userPicture)
+                    .signUp(userName, password, firstName, lastName)
                     .then(() => this.Api.login(userName, password))
                     .then(this.Api.getUserInfo)
                     .then((userInfo: IUserInfo) => {
@@ -132,12 +129,6 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
         const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
         this.removeWrongSignUpInfoMessage();
         this.setState({ lastName: target.value });
-    }
-
-    setUserPicture(event: React.FormEvent<HTMLDivElement>): void {
-        const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
-        this.removeWrongSignUpInfoMessage();
-        this.setState({ userPicture: target.value });
     }
 
     removeWrongSignUpInfoMessage(): void {
@@ -237,16 +228,6 @@ class SignUpModal extends React.Component<ISignUpModalProps, ISignUpModalState> 
                                 value={this.state.lastName || ""}
                             />
                         </div>
-                        {/* <div className={styles.inputFieldContainer}>
-                            <div className={styles.inputFieldLabel}>{"User Picture"}</div>
-                            <input
-                                className={this.state.signUpInfoIsWrong ? styles.inputFieldError : styles.inputField}
-                                type={"text"}
-                                required={false}
-                                onChange={this.setUserPicture}
-                                value={this.state.userPicture || ""}
-                            />
-                        </div> */}
                         <div className={styles.errorMessageContainer}>
                             {this.state.signUpInfoIsWrong && (
                                     <div className={styles.errorMessage}>{"Username already exists"}</div>

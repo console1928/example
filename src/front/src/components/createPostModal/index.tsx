@@ -49,7 +49,7 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
     handleClickOutsideInputContainer(event: UIEvent): void {
         if (this.inputContainerRef && !this.inputContainerRef.contains(event.target)) {
             this.closeModal();
-          }
+        }
     }
 
     createPost(event: React.FormEvent<HTMLFormElement>): void {

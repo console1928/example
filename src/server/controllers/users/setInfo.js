@@ -6,16 +6,27 @@ const helpers = require("../../helpers/helpers");
 /**
  * @swagger
  *
- * /users/userinfo:
- *   get:
+ * /users/setInfo:
+ *   post:
  *     security:
  *       - cookieAuth: []
- *     summary: Get information about user.
+ *     summary: Set user's profile info.
  *     produces:
  *       - application/json
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userInfo:
+ *                 type: string
+ *             required:
+ *               - userInfo
  *     responses:
  *       200:
- *         description: User info acquired.
+ *         description: User info is set.
  *       400:
  *         description: Error.
  *       401:
@@ -23,15 +34,16 @@ const helpers = require("../../helpers/helpers");
  *     tags:
  *       - users
  */
-router.get("/userinfo", (req, res) => {
+router.post("/setInfo", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
+    const userInfo = req.body.userInfo || "";
 
     helpers.checkSession(cookie)
-        .then(
-            () => userModel
-                .findOne(
-                    { "cookie": cookie },
-                    {
+        .then(() => userModel.findOneAndUpdate(
+                { "cookie": cookie },
+                { $set: { "info": userInfo } },
+                {
+                    projection: {
                         _id: 1,
                         name: 1,
                         firstName: 1,
@@ -41,9 +53,10 @@ router.get("/userinfo", (req, res) => {
                         posts: 1,
                         info: 1,
                         picture: 1
-                    }
-                )
-        )
+                    },
+                    new: true
+                }
+            ))
         .then(user => res.status(200).send(JSON.stringify(user)))
         .catch(error => res.sendStatus(parseInt(error.message) || 400));
 });

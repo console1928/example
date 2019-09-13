@@ -6,6 +6,8 @@ export interface IUserInfo {
     contacts: [];
     dialogues: [];
     posts: string[];
+    info: string;
+    picture: string;
 }
 
 export interface IUserPublicInfo {
@@ -13,6 +15,8 @@ export interface IUserPublicInfo {
     name: string;
     firstName: string;
     lastName: string;
+    info: string;
+    picture: string;
 }
 
 export interface IPost {

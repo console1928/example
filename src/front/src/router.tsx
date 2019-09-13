@@ -5,6 +5,7 @@ import { IUserInfo, IUserPublicInfo } from "./types";
 import Api from "./api";
 import Main from "./components/main";
 import StartPage from "./components/startPage";
+import UserPage from "./components/userPage";
 
 interface IRouterProps {}
 
@@ -49,15 +50,12 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     }
 
     updateUsersPublicInfo(userId: string): void {
-        if (
-            !this.state.usersPublicInfo.hasOwnProperty(userId) &&
-                this.pendingUsersPublicInfo.indexOf(userId) === -1
-        ) {
+        if (this.pendingUsersPublicInfo.indexOf(userId) === -1) {
             this.pendingUsersPublicInfo = [ ...this.pendingUsersPublicInfo, userId ];
             this.Api.getUserPublicInfo(userId)
                 .then((userPublicInfo: IUserPublicInfo) =>
                         this.setState(
-                            () => ({ usersPublicInfo: { [userId]: userPublicInfo, ...this.state.usersPublicInfo } }),
+                            () => ({ usersPublicInfo: { ...this.state.usersPublicInfo, [userId]: userPublicInfo } }),
                             () => this.pendingUsersPublicInfo.splice(this.pendingUsersPublicInfo.indexOf(userId), 1)
                         )
                     );
@@ -79,6 +77,19 @@ class Router extends React.Component<IRouterProps, IRouterState> {
                         render={
                             () =>
                                 <Main
+                                    userInfo={this.state.userInfo}
+                                    setUserInfo={this.setUserInfo}
+                                    usersPublicInfo={this.state.usersPublicInfo}
+                                    updateUsersPublicInfo={this.updateUsersPublicInfo}
+                                />
+                        }
+                    />
+                    <Route
+                        exact={false}
+                        path={"/user"}
+                        render={
+                            () =>
+                                <UserPage
                                     userInfo={this.state.userInfo}
                                     setUserInfo={this.setUserInfo}
                                     usersPublicInfo={this.state.usersPublicInfo}

@@ -1,32 +1,23 @@
 import { IUserInfo, IUserPublicInfo, IPost, IPostComment } from "../types";
 
 class Api {
-    signUp: (
-        userName: string,
-        password: string,
-        firstName: string,
-        lastName: string,
-        userPicture: string | null
-    ) => Promise<string | void> = (userName, password, firstName, lastName, userPicture) => {
-        const url: string = `/users/create`;
-        return fetch(url, {
-                method: "post",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(
-                        userPicture
-                            ? { userName, password, firstName, lastName, userPicture }
-                            : { userName, password, firstName, lastName }
-                    )
-            })
-            .then(response => {
-                    if (!response.ok) {
-                        throw new Error(response.statusText);
-                    }
-                    return response.text();
-                });
-    }
+    signUp: ( userName: string, password: string, firstName: string, lastName: string ) => Promise<string | void> =
+        (userName, password, firstName, lastName) => {
+            const url: string = `/users/create`;
+            return fetch(url, {
+                    method: "post",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ userName, password, firstName, lastName })
+                })
+                .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.text();
+                    });
+        }
 
     login: (userName: string, password: string) => Promise<string | void> = (userName, password) => {
         const url: string = `/authentication/login`;
@@ -177,6 +168,38 @@ class Api {
                         throw new Error(response.statusText);
                     }
                     return response.text();
+                });
+    }
+
+    setUserPicture: (userPicture: string) => Promise<IUserInfo> = (userPicture) => {
+        const url: string = `/users/setPicture`;
+        return fetch(url, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userPicture }) })
+            .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.json();
+                });
+    }
+
+    setUserInfo: (userInfo: string) => Promise<IUserInfo> = (userInfo) => {
+        const url: string = `/users/setInfo`;
+        return fetch(url, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userInfo }) })
+            .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.json();
                 });
     }
 }

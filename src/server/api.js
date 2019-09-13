@@ -6,6 +6,8 @@ const addContact = require("./controllers/users/addContact.js");
 const deleteUser = require("./controllers/users/delete.js");
 const userInfo = require("./controllers/users/userInfo.js");
 const userPublicInfo = require("./controllers/users/userPublicInfo.js");
+const setUserInfo = require("./controllers/users/setInfo.js");
+const setUserPicture = require("./controllers/users/setPicture.js");
 const login = require("./controllers/authentication/login.js");
 const logout = require("./controllers/authentication/logout.js");
 const createDialogue = require("./controllers/dialogues/create.js");
@@ -27,6 +29,7 @@ mongoose.connect(mongoDB, { useNewUrlParser: true })
 
 app.use("/", express.static("../front/build"));
 app.use("/posts", express.static("../front/build"));
+app.use("/user", express.static("../front/build"));
 app.use(cookieParser());
 app.use(express.json());
 
@@ -35,6 +38,8 @@ app.use("/users", addContact);
 app.use("/users", deleteUser);
 app.use("/users", userInfo);
 app.use("/users", userPublicInfo);
+app.use("/users", setUserInfo);
+app.use("/users", setUserPicture);
 app.use("/authentication", login);
 app.use("/authentication", logout);
 app.use("/dialogues", createDialogue);

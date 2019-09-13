@@ -28,7 +28,16 @@ const userModel = require("../../models/user");
 router.get("/userPublicInfo", (req, res) => {
     let userId = req.query.userId || "";
 
-    userModel.findOne({ "_id": userId }, { _id: 1, name: 1, firstName: 1, lastName: 1 })
+    userModel.findOne(
+        {"_id": userId },
+        {
+            _id: 1,
+            name: 1,
+            firstName: 1,
+            lastName: 1,
+            info: 1,
+            picture: 1
+        })
         .then(user => res.status(200).send(JSON.stringify(user)))
         .catch(error => res.sendStatus(parseInt(error.message) || 400));
 });

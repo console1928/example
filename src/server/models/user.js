@@ -12,7 +12,8 @@ const UserSchema = new Schema(
         cookie: { type: String },
         contacts: [{ type: String }],
         dialogues: [{ type: String }],
-        posts: [{ type: String }]
+        posts: [{ type: String }],
+        info: { type: String }
     }
 );
 

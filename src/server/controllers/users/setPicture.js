@@ -6,16 +6,27 @@ const helpers = require("../../helpers/helpers");
 /**
  * @swagger
  *
- * /users/userinfo:
- *   get:
+ * /users/setPicture:
+ *   post:
  *     security:
  *       - cookieAuth: []
- *     summary: Get information about user.
+ *     summary: Set user's profile picture.
  *     produces:
  *       - application/json
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userPicture:
+ *                 type: string
+ *             required:
+ *               - userPicture
  *     responses:
  *       200:
- *         description: User info acquired.
+ *         description: User picture is set.
  *       400:
  *         description: Error.
  *       401:
@@ -23,15 +34,16 @@ const helpers = require("../../helpers/helpers");
  *     tags:
  *       - users
  */
-router.get("/userinfo", (req, res) => {
+router.post("/setPicture", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
+    const userPicture = req.body.userPicture || "";
 
     helpers.checkSession(cookie)
-        .then(
-            () => userModel
-                .findOne(
-                    { "cookie": cookie },
-                    {
+        .then(() => userModel.findOneAndUpdate(
+                { "cookie": cookie },
+                { $set: { "picture": userPicture } },
+                {
+                    projection: {
                         _id: 1,
                         name: 1,
                         firstName: 1,
@@ -41,9 +53,10 @@ router.get("/userinfo", (req, res) => {
                         posts: 1,
                         info: 1,
                         picture: 1
-                    }
-                )
-        )
+                    },
+                    new: true
+                }
+            ))
         .then(user => res.status(200).send(JSON.stringify(user)))
         .catch(error => res.sendStatus(parseInt(error.message) || 400));
 });

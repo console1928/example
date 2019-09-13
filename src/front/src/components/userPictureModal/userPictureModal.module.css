@@ -1,0 +1,122 @@
+@value variables: "../../variables.css";
+@value mainColor from variables;
+
+.container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    overflow-y: scroll;
+    z-index: 2;
+}
+
+.inputContainer {
+    margin: 50px auto;
+    min-height: 750px;
+    width: 100%;
+    max-width: 500px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.inputContainerHeader {
+    height: 50px;
+    width: 100%;
+}
+
+.inputFieldContainer {
+    display: block;
+    width: 80%;
+    margin: 30px auto;
+}
+
+.inputField {
+    outline: none;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    border: 1px solid #333;
+}
+
+.inputFieldError {
+    composes: inputField;
+    border: 1px solid #f00;
+}
+
+.inputFieldLabel {
+    margin-bottom: 10px;
+}
+
+.inputFieldRequired {
+    color: #f00;
+}
+
+.errorMessageContainer {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    color: #f00;
+}
+
+.spinner {
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    margin-top: 50px;
+    color: mainColor;
+    line-height: 50px;
+    text-align: center;
+    font-size: 30px;
+    animation: spin 1s infinite linear;
+}
+
+.inputSubmit {
+    outline: none;
+    height: 50px;
+    width: 100%;
+    max-width: 150px;
+    margin-top: 50px;
+    background-color: #fff;
+    border: 1px solid #000;
+    font-size: 20px;
+    transition: 0.3s all;
+    cursor: pointer;
+}
+
+.inputSubmit:hover {
+    color: mainColor;
+    border: 1px solid mainColor;
+}
+
+.closeButtonContainer {
+    float: right;
+    margin: 20px;
+    cursor: pointer;
+    transition: 0.3s all;
+}
+
+.closeButtonContainer:hover {
+    color: mainColor;
+}
+
+@keyframes spin {
+    from { transform:rotate(0deg); transform-origin: 25px 22px; }
+    to { transform:rotate(359deg); transform-origin: 25px 22px; }
+}
+
+@media(max-width: 600px) {
+    .inputContainer {
+        max-width: 100%;
+        border-radius: initial;
+    }
+    
+    .inputFieldContainer,
+    .errorMessageContainer {
+        width: 80%;
+    }
+}

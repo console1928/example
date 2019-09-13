@@ -26,8 +26,6 @@ const userModel = require("../../models/user");
  *                 type: string
  *               lastName:
  *                 type: string
- *               userPicture:
- *                 type: string
  *             required:
  *               - userName
  *               - password
@@ -45,7 +43,6 @@ router.post("/create", (req, res) => {
     const password = req.body.password || "";
     const firstName = req.body.firstName || "";
     const lastName = req.body.lastName || "";
-    const userPicture = req.body.userPicture || "";
     let userName = req.body.userName || "";
     userName = userName.replace(/[!@#$%^&*]/g, "");
 
@@ -68,7 +65,6 @@ router.post("/create", (req, res) => {
                         name: userName,
                         firstName: firstName,
                         lastName: lastName,
-                        picture: userPicture,
                         salt: salt,
                         hash: hash
                     }

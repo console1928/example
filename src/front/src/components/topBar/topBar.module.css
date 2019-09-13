@@ -33,8 +33,36 @@
     composes: signInContainer;
 }
 
-.homeContainer {
+.userLink {
+    display: inline-block;
+    padding-left: 10px;
+    color: #333;
+    line-height: 50px;
+    transition: 0.3s all;
+}
+
+.userLink:hover {
+    background-color: rgba(51, 51, 51, 0.1);
+}
+
+.homeContainer,
+.postsLink {
     float: left;
+}
+
+.postsLink {
+    height: 50px;
+    padding: 0px 10px;
+    color: #333;
+    transition: 0.3s all;
+    text-decoration: none;
+    font-size: 20px;
+    line-height: 42px;
+    cursor: pointer;
+}
+
+.postsLink:hover {
+    background-color: rgba(51, 51, 51, 0.1);
 }
 
 .signOutIcon,
@@ -47,7 +75,7 @@
     display: inline-block;
     margin-right: 10px;
     font-size: 30px;
-    line-height: 50px;
+    line-height: 42px;
     vertical-align: middle;
 }
 
