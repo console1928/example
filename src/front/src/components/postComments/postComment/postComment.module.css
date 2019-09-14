@@ -5,17 +5,38 @@
     margin: 30px 0px;
 }
 
+.userLink {
+    display: inline-block;
+    margin-right: 20px;
+    color: #333;
+    font-size: 16px;
+}
+
 .userIcon {
     display: inline-block;
     margin-right: 10px;
-    font-size: 30px;
-    line-height: 50px;
     vertical-align: middle;
+}
+
+.userPicture {
+    width: 30px;
+    height: 30px;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.defaultUserPicture {
+    color: #333;
+    font-size: 30px;
 }
 
 .author {
     display: inline-block;
-    margin-right: 20px;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    vertical-align: text-bottom;
 }
 
 .date {

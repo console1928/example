@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { FaHeart, FaRegHeart, FaRegTimesCircle, FaUserCircle, FaPaperPlane } from "react-icons/fa";
 import styles from "./post.module.css";
@@ -25,6 +26,8 @@ interface IPostState {
     commentsAreLoading: boolean;
     commentsContainerHeight: number | null;
     errorMessageIsOpened: boolean;
+    DefaultUserPictureIsShowing: boolean;
+    DefaultPostAuthorPictureIsShowing: boolean;
 }
 
 class Post extends React.Component<IPostProps, IPostState> {
@@ -44,7 +47,9 @@ class Post extends React.Component<IPostProps, IPostState> {
             postCommentValue: "",
             commentsAreLoading: false,
             commentsContainerHeight: null,
-            errorMessageIsOpened: false
+            errorMessageIsOpened: false,
+            DefaultUserPictureIsShowing: false,
+            DefaultPostAuthorPictureIsShowing: false
         };
 
         this.postContainerRef = null;
@@ -68,6 +73,8 @@ class Post extends React.Component<IPostProps, IPostState> {
         this.closeErrorMessage = this.closeErrorMessage.bind(this);
         this.onScroll = this.onScroll.bind(this);
         this.onInputKeyPress = this.onInputKeyPress.bind(this);
+        this.showDefaultUserPicture = this.showDefaultUserPicture.bind(this);
+        this.showDefaultPostAuthorPicture = this.showDefaultPostAuthorPicture.bind(this);
     }
 
     postContainerRef: any = null;
@@ -211,6 +218,14 @@ class Post extends React.Component<IPostProps, IPostState> {
         event.stopPropagation();
     }
 
+    showDefaultPostAuthorPicture(): void {
+        this.setState({ DefaultPostAuthorPictureIsShowing: true });
+    }
+
+    showDefaultUserPicture(): void {
+        this.setState({ DefaultUserPictureIsShowing: true });
+    }
+
     renderPost(): JSX.Element {
         const { userInfo, post, usersPublicInfo } = this.props;
         return (
@@ -219,11 +234,28 @@ class Post extends React.Component<IPostProps, IPostState> {
                 ref={ref => this.postContainerRef = ref}
             >
                 <div className={styles.hat}>
-                    <div className={styles.userIcon}><FaUserCircle /></div>
-                    <div className={styles.author}>
-                        {usersPublicInfo && post.author && usersPublicInfo[post.author] && (
-                            `${usersPublicInfo[post.author].firstName} ${usersPublicInfo[post.author].lastName}`)}
-                    </div>
+                    <Link className={styles.userLink} to={`/user/${post.author}`}>
+                        <div className={styles.userIcon}>
+                            {this.state.DefaultPostAuthorPictureIsShowing ? (
+                                    <FaUserCircle className={styles.defaultUserPicture} />
+                                ) : (
+                                    <img
+                                        className={styles.userPicture}
+                                        src={
+                                            usersPublicInfo &&
+                                                post.author &&
+                                                usersPublicInfo[post.author] &&
+                                                usersPublicInfo[post.author].picture
+                                        }
+                                        onError={this.showDefaultPostAuthorPicture}
+                                    />
+                                )}
+                        </div>
+                        <div className={styles.author}>
+                            {usersPublicInfo && post.author && usersPublicInfo[post.author] && (
+                                `${usersPublicInfo[post.author].firstName} ${usersPublicInfo[post.author].lastName}`)}
+                        </div>
+                    </Link>
                     <div className={styles.date}>
                         {post.date && this.Helpers.formatDate(post.date)}
                     </div>
@@ -280,7 +312,17 @@ class Post extends React.Component<IPostProps, IPostState> {
                         <div className={styles.inputFieldContainer}>
                             {userInfo ? (
                                 <React.Fragment>
-                                    <div className={styles.inputUserIcon}><FaUserCircle /></div>
+                                    <Link className={styles.inputUserIcon} to={`/user/${userInfo._id}`}>
+                                        {this.state.DefaultUserPictureIsShowing ? (
+                                                <FaUserCircle className={styles.defaultUserPicture} />
+                                            ) : (
+                                                <img
+                                                    className={styles.userPicture}
+                                                    src={userInfo && userInfo.picture}
+                                                    onError={this.showDefaultUserPicture}
+                                                />
+                                            )}
+                                    </Link>
                                     <input
                                         className={styles.inputField}
                                         type={"text"}

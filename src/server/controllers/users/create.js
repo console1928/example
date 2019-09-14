@@ -66,7 +66,9 @@ router.post("/create", (req, res) => {
                         firstName: firstName,
                         lastName: lastName,
                         salt: salt,
-                        hash: hash
+                        hash: hash,
+                        picture: "",
+                        info: ""
                     }
                 );
                 return user;

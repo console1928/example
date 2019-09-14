@@ -17,6 +17,12 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
+.userLink {
+    display: inline-block;
+    margin-right: 20px;
+    color: #333;
+}
+
 .userIcon {
     display: inline-block;
     margin-right: 10px;
@@ -25,9 +31,19 @@
     vertical-align: middle;
 }
 
+.userPicture {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.defaultUserPicture {
+    color: #333;
+}
+
 .author {
     display: inline-block;
-    margin-right: 20px;
 }
 
 .date {

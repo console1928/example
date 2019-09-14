@@ -79,6 +79,13 @@
     vertical-align: middle;
 }
 
+.userPicture {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
 .searchIcon {
     position: absolute;
     margin-left: 10px;
@@ -126,6 +133,29 @@
     composes: searchInput;
     color: #fff;
     background-color: #333;
+}
+
+.menuContainer {
+    position: absolute;
+    right: 20px;
+    top: 50px;
+    width: 100px;
+    padding: 10px 0px;
+    background-color: #fff;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
+    z-index: 3;
+}
+
+.menuItem {
+    padding: 10px 20px;
+    color: mainColor;
+    cursor: pointer;
+    transition: 0.3s all;
+}
+
+.menuItem:hover {
+    color: #fff;
+    background-color: mainColor;
 }
 
 @media(max-width: 620px) {

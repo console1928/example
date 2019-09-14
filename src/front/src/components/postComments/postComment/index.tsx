@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { FaHeart, FaRegHeart, FaUserCircle, FaPen, FaPaperPlane } from "react-icons/fa";
 import styles from "./postComment.module.css";
 import { IUserInfo, IUserPublicInfo, IPostComment } from "../../../types";
@@ -22,6 +23,7 @@ interface IPostCommentState {
     answerInputIsOpened: boolean;
     answerValue: string;
     errorMessageIsOpened: boolean;
+    DefaultUserPictureIsShowing: boolean;
 }
 
 class PostComment extends React.Component<IPostCommentProps, IPostCommentState> {
@@ -41,7 +43,8 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
             unauthenticatedMessageIsOpened: false,
             answerInputIsOpened: false,
             answerValue: "",
-            errorMessageIsOpened: false
+            errorMessageIsOpened: false,
+            DefaultUserPictureIsShowing: false
 
         };
 
@@ -59,6 +62,7 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
         this.openErrorMessage = this.openErrorMessage.bind(this);
         this.closeErrorMessage = this.closeErrorMessage.bind(this);
         this.onInputKeyPress = this.onInputKeyPress.bind(this);
+        this.showDefaultUserPicture = this.showDefaultUserPicture.bind(this);
     }
 
     unauthenticatedMessageTimer: any = null;
@@ -152,15 +156,41 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
         this.setState({ errorMessageIsOpened: false });
     }
 
+    showDefaultUserPicture(): void {
+        this.setState({ DefaultUserPictureIsShowing: true });
+    }
+
     renderPostComment(comment: IPostComment): JSX.Element {
         const { userInfo, usersPublicInfo } = this.props;
         return (
             <div className={styles.container}>
-                <div className={styles.userIcon}><FaUserCircle /></div>
-                <div className={styles.author}>
-                    {usersPublicInfo && comment.author && usersPublicInfo[comment.author] && (
-                            `${usersPublicInfo[comment.author].firstName} ${usersPublicInfo[comment.author].lastName}`
-                        )}
+                <div className={styles.userIcon}>
+                    <Link className={styles.userLink} to={`/user/${comment.author}`}>
+                        <div className={styles.userIcon}>
+                            {this.state.DefaultUserPictureIsShowing ? (
+                                    <FaUserCircle className={styles.defaultUserPicture} />
+                                ) : (
+                                    <img
+                                        className={styles.userPicture}
+                                        src={
+                                            usersPublicInfo &&
+                                                comment.author &&
+                                                usersPublicInfo[comment.author] &&
+                                                usersPublicInfo[comment.author].picture
+                                        }
+                                        onError={this.showDefaultUserPicture}
+                                    />
+                                )}
+                        </div>
+                        <div className={styles.author}>
+                            {usersPublicInfo && comment.author && usersPublicInfo[comment.author] && (
+                                `${
+                                    usersPublicInfo[comment.author].firstName
+                                } ${
+                                    usersPublicInfo[comment.author].lastName
+                                }`)}
+                        </div>
+                    </Link>
                 </div>
                 <div className={styles.date}>
                     {comment.date && this.Helpers.formatDate(comment.date)}

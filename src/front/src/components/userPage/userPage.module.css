@@ -22,7 +22,10 @@
 }
 
 .userPicture {
-
+    height: 260px;
+    width: 260px;
+    border-radius: 130px;
+    object-fit: cover;
 }
 
 .defaultUserPicture {
