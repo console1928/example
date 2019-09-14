@@ -150,7 +150,7 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
                             </Link>
                         </div>)}
                     {this.props.location &&
-                        this.props.location.pathname !== "/posts" && (
+                        this.props.location.pathname.indexOf("/posts") === -1 && (
                             <Link className={styles.postsLink} to={"/posts"}>{"Jump to blog"}</Link>)}
                     {this.props.userInfo ? (
                         <div className={styles.signOutContainer}>
@@ -178,7 +178,7 @@ class TopBar extends React.Component<ITopBarProps, ITopBarState> {
                         </div>
                     )}
                     {this.props.location &&
-                        this.props.location.pathname === "/posts" && (
+                        this.props.location.pathname.indexOf("/posts") !== -1 && (
                             <div className={styles.searchInputContainer}>
                                 <div
                                     className={
