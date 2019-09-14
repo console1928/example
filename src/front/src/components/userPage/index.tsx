@@ -30,7 +30,7 @@ class UserPage extends React.Component<IUserPageProps, IUserPageState> {
             userPictureModalIsOpened: false,
             userInfoModalIsOpened: false,
             DefaultUserPictureIsShowing: false,
-            userId: this.props.location.pathname.split("/").pop() || ""
+            userId: this.props.location.pathname.split("/")[2] || ""
         };
 
         this.setUserInfo = this.setUserInfo.bind(this);
@@ -54,7 +54,7 @@ class UserPage extends React.Component<IUserPageProps, IUserPageState> {
         ) {
             this.setState({
                 DefaultUserPictureIsShowing: false,
-                userId: this.props.location.pathname.split("/").pop() || ""
+                userId: this.props.location.pathname.split("/")[2] || ""
             });
         }
     }

@@ -29,7 +29,7 @@ mongoose.connect(mongoDB, { useNewUrlParser: true })
 
 app.use("/", express.static("../front/build"));
 app.use("/posts", express.static("../front/build"));
-app.use("/user", express.static("../front/build"));
+app.use("/user/*", express.static("../front/build"));
 app.use(cookieParser());
 app.use(express.json());
 
