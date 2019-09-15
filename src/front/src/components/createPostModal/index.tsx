@@ -13,6 +13,7 @@ interface ICreatePostModalState {
     postName: string | null;
     postContent: string | null;
     createPostIsPending: boolean;
+    postPreviewPicture: string | null;
 }
 
 class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePostModalState> {
@@ -22,7 +23,8 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
         this.state = {
             postName: null,
             postContent: null,
-            createPostIsPending: false
+            createPostIsPending: false,
+            postPreviewPicture: null
         };
 
         this.inputContainerRef = null;
@@ -31,6 +33,7 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
         this.createPost = this.createPost.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.setPostName = this.setPostName.bind(this);
+        this.setPostPreviewPicture = this.setPostPreviewPicture.bind(this);
         this.setPostContent = this.setPostContent.bind(this);
     }
 
@@ -54,10 +57,11 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
 
     createPost(event: React.FormEvent<HTMLFormElement>): void {
         event.preventDefault();
-        if (this.state.postName && this.state.postContent) {
+        const { postName, postContent, postPreviewPicture } = this.state;
+        if (postName && postContent) {
             this.setState({ createPostIsPending: true });
             this.Api
-                .createPost(this.state.postName, this.state.postContent)
+                .createPost(postName, postContent, postPreviewPicture || "")
                 .then(() => this.setState({ createPostIsPending: false }))
                 .then(() => {
                         this.props.showPostCreatedMessage();
@@ -81,6 +85,11 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
         this.setState({ postName: target.value });
     }
 
+    setPostPreviewPicture(event: React.FormEvent<HTMLInputElement>): void {
+        const target: HTMLInputElement = event.target as HTMLInputElement;
+        this.setState({ postPreviewPicture: target.value });
+    }
+
     setPostContent(event: React.FormEvent<HTMLTextAreaElement>): void {
         const target: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
         this.setState({ postContent: target.value });
@@ -101,7 +110,7 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
                     <form className={styles.inputForm} onSubmit={this.createPost}>
                         <div className={styles.inputFieldContainer}>
                             <div className={styles.inputFieldLabel}>
-                                {"Post Name"}
+                                {"Post name"}
                                 <span className={styles.inputFieldRequired}>{" *"}</span>
                             </div>
                             <input
@@ -110,6 +119,19 @@ class CreatePostModal extends React.Component<ICreatePostModalProps, ICreatePost
                                 required={true}
                                 onChange={this.setPostName}
                                 value={this.state.postName || ""}
+                            />
+                        </div>
+                        <div className={styles.inputFieldContainer}>
+                            <div className={styles.inputFieldLabel}>
+                                {"Post preview picture (optional)"}
+                            </div>
+                            <input
+                                className={styles.inputField}
+                                type={"text"}
+                                required={false}
+                                onChange={this.setPostPreviewPicture}
+                                value={this.state.postPreviewPicture || ""}
+                                placeholder={"URL to preview picture"}
                             />
                         </div>
                         <div className={styles.inputFieldContainer}>

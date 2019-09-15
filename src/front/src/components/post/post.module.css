@@ -226,3 +226,9 @@
         border-radius: initial;
     }
 }
+
+@media(max-width: 720px) {
+    .name {
+        font-size: 20px;
+    }
+}

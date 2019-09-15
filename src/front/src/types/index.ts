@@ -24,6 +24,7 @@ export interface IPost {
     author: string;
     name: string;
     text: string;
+    previewPicture: string;
     date: string;
     comments: string[];
     likes: string[];

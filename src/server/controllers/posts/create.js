@@ -25,6 +25,8 @@ const helpers = require("../../helpers/helpers");
  *                 type: string
  *               postContent:
  *                 type: string
+ *               postPreviewPicture:
+ *                 type: string
  *             required:
  *               - postName
  *               - postContent
@@ -40,6 +42,7 @@ router.post("/create", (req, res) => {
     const cookie = req.cookies["exampleAppCookie"] || "";
     let postName = req.body.postName || "";
     let postContent = req.body.postContent || "";
+    let postPreviewPicture = req.body.postPreviewPicture || "";
     const postDate = Date.now();
 
     helpers.checkSession(cookie)
@@ -53,6 +56,7 @@ router.post("/create", (req, res) => {
                         author: user._id,
                         name: postName,
                         text: postContent,
+                        previewPicture: postPreviewPicture,
                         date: postDate,
                         comments: [],
                         likes: []

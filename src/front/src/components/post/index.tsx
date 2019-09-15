@@ -26,8 +26,9 @@ interface IPostState {
     commentsAreLoading: boolean;
     commentsContainerHeight: number | null;
     errorMessageIsOpened: boolean;
-    DefaultUserPictureIsShowing: boolean;
-    DefaultPostAuthorPictureIsShowing: boolean;
+    defaultUserPictureIsShowing: boolean;
+    defaultPostAuthorPictureIsShowing: boolean;
+    postPreviewPictureIsCorrupted: boolean;
 }
 
 class Post extends React.Component<IPostProps, IPostState> {
@@ -48,8 +49,9 @@ class Post extends React.Component<IPostProps, IPostState> {
             commentsAreLoading: false,
             commentsContainerHeight: null,
             errorMessageIsOpened: false,
-            DefaultUserPictureIsShowing: false,
-            DefaultPostAuthorPictureIsShowing: false
+            defaultUserPictureIsShowing: false,
+            defaultPostAuthorPictureIsShowing: false,
+            postPreviewPictureIsCorrupted: false
         };
 
         this.postContainerRef = null;
@@ -75,6 +77,7 @@ class Post extends React.Component<IPostProps, IPostState> {
         this.onInputKeyPress = this.onInputKeyPress.bind(this);
         this.showDefaultUserPicture = this.showDefaultUserPicture.bind(this);
         this.showDefaultPostAuthorPicture = this.showDefaultPostAuthorPicture.bind(this);
+        this.onDefaultPostPreviewPictureError = this.onDefaultPostPreviewPictureError.bind(this);
     }
 
     postContainerRef: any = null;
@@ -219,11 +222,15 @@ class Post extends React.Component<IPostProps, IPostState> {
     }
 
     showDefaultPostAuthorPicture(): void {
-        this.setState({ DefaultPostAuthorPictureIsShowing: true });
+        this.setState({ defaultPostAuthorPictureIsShowing: true });
     }
 
     showDefaultUserPicture(): void {
-        this.setState({ DefaultUserPictureIsShowing: true });
+        this.setState({ defaultUserPictureIsShowing: true });
+    }
+
+    onDefaultPostPreviewPictureError(): void {
+        this.setState({ postPreviewPictureIsCorrupted: true });
     }
 
     renderPost(): JSX.Element {
@@ -236,7 +243,7 @@ class Post extends React.Component<IPostProps, IPostState> {
                 <div className={styles.hat}>
                     <Link className={styles.userLink} to={`/user/${post.author}`}>
                         <div className={styles.userIcon}>
-                            {this.state.DefaultPostAuthorPictureIsShowing ? (
+                            {this.state.defaultPostAuthorPictureIsShowing ? (
                                     <FaUserCircle className={styles.defaultUserPicture} />
                                 ) : (
                                     <img
@@ -265,10 +272,25 @@ class Post extends React.Component<IPostProps, IPostState> {
                         </div>)}
                 </div>
                 <div className={styles.name}>{post.name}</div>
-                <div className={this.state.postIsExpanded ? styles.textExpanded : styles.text}>
-                    <ReactMarkdown source={post.text} />
-                </div>
-                {!this.state.postIsExpanded && (<div className={styles.textShadow} />)}
+                {this.state.postIsExpanded ? (
+                    <div className={styles.textExpanded}>
+                        <ReactMarkdown source={post.text} />
+                    </div>
+                ) : (
+                    <React.Fragment>
+                        {post.previewPicture && !this.state.postPreviewPictureIsCorrupted ? (
+                            <div className={styles.textExpanded}>
+                                <img src={post.previewPicture} onError={this.onDefaultPostPreviewPictureError} />
+                            </div>
+                        ) : (
+                            <div className={styles.text}>
+                                <ReactMarkdown source={post.text} />
+                            </div>
+                        )}
+                    </React.Fragment>
+                )}
+                {!this.state.postIsExpanded && (!post.previewPicture || this.state.postPreviewPictureIsCorrupted) && (
+                    <div className={styles.textShadow} />)}
                 <div className={styles.footer}>
                     {!this.state.postIsExpanded ? (
                             <div className={styles.expandPostButton} onClick={this.expandPost}>{"Read"}</div>
@@ -313,7 +335,7 @@ class Post extends React.Component<IPostProps, IPostState> {
                             {userInfo ? (
                                 <React.Fragment>
                                     <Link className={styles.inputUserIcon} to={`/user/${userInfo._id}`}>
-                                        {this.state.DefaultUserPictureIsShowing ? (
+                                        {this.state.defaultUserPictureIsShowing ? (
                                                 <FaUserCircle className={styles.defaultUserPicture} />
                                             ) : (
                                                 <img

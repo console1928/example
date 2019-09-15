@@ -88,21 +88,22 @@ class Api {
                     });
         }
 
-    createPost: (postName: string, postContent: string) => Promise<string | void> = (postName, postContent) => {
-        const url: string = `/posts/create`;
-        return fetch(url, {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ postName, postContent }) })
-            .then(response => {
-                    if (!response.ok) {
-                        throw new Error(response.statusText);
-                    }
-                    return response.text();
-                });
-    }
+    createPost: (postName: string, postContent: string, postPreviewPicture: string) => Promise<string | void> =
+        (postName, postContent, postPreviewPicture) => {
+            const url: string = `/posts/create`;
+            return fetch(url, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ postName, postContent, postPreviewPicture }) })
+                .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.text();
+                    });
+        }
 
     togglePostLike: (postId: string) => Promise<string | void> = (postId) => {
         const url: string = `/posts/toggleLike?postId=${postId}`;
