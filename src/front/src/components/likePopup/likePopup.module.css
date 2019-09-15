@@ -1,0 +1,29 @@
+.container {
+    position: absolute;
+    padding: 15px 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    line-height: initial;
+    text-align: initial;
+    transition: margin-top 0.2s;
+    cursor: default;
+    z-index: 1;
+}
+
+.userPictureContainer {
+    display: inline-block;
+    height: 40px;
+    margin: 0px 5px;
+}
+
+.userPicture {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.text {
+    margin: 0px 5px;
+}

@@ -7,6 +7,7 @@ import Helpers from "../../../helpers";
 import Api from "../../../api";
 import UnauthenticatedMessage from "../../unauthenticatedMessage";
 import Toast from "../../toast";
+import LikePopup from "../../likePopup";
 
 interface IPostCommentProps {
     userInfo: IUserInfo | null;
@@ -24,6 +25,7 @@ interface IPostCommentState {
     answerValue: string;
     errorMessageIsOpened: boolean;
     DefaultUserPictureIsShowing: boolean;
+    likePopupIsOpened: boolean;
 }
 
 class PostComment extends React.Component<IPostCommentProps, IPostCommentState> {
@@ -44,7 +46,8 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
             answerInputIsOpened: false,
             answerValue: "",
             errorMessageIsOpened: false,
-            DefaultUserPictureIsShowing: false
+            DefaultUserPictureIsShowing: false,
+            likePopupIsOpened: false
 
         };
 
@@ -63,6 +66,8 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
         this.closeErrorMessage = this.closeErrorMessage.bind(this);
         this.onInputKeyPress = this.onInputKeyPress.bind(this);
         this.showDefaultUserPicture = this.showDefaultUserPicture.bind(this);
+        this.openLikePopup = this.openLikePopup.bind(this);
+        this.closeLikePopup = this.closeLikePopup.bind(this);
     }
 
     unauthenticatedMessageTimer: any = null;
@@ -83,6 +88,7 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
     }
 
     handleLikePress(): void {
+        this.setState({ likePopupIsOpened: false });
         if (this.props.userInfo) {
             this.toggleCommentLike();
         } else {
@@ -160,6 +166,16 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
         this.setState({ DefaultUserPictureIsShowing: true });
     }
 
+    openLikePopup(): void {
+        if (!this.state.unauthenticatedMessageIsOpened) {
+            this.setState({ likePopupIsOpened: true });
+        }
+    }
+
+    closeLikePopup(): void {
+        this.setState({ likePopupIsOpened: false });
+    }
+
     renderPostComment(comment: IPostComment): JSX.Element {
         const { userInfo, usersPublicInfo } = this.props;
         return (
@@ -208,7 +224,11 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
                         {"log in or sign up to answer"}
                     </div>
                 )}
-                <div className={styles.likeContainer}>
+                <div
+                    className={styles.likeContainer}
+                    onMouseEnter={this.openLikePopup}
+                    onMouseLeave={this.closeLikePopup}
+                >
                     <div
                         className={userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
                         onClick={this.handleLikePress}
@@ -219,6 +239,15 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
                     {this.state.unauthenticatedMessageIsOpened && (
                         <UnauthenticatedMessage
                             closeUnauthenticatedMessage={this.closeUnauthenticatedMessage}
+                        />)}
+                    {this.state.likePopupIsOpened && (
+                        <LikePopup
+                            userInfo={userInfo}
+                            likes={comment.likes}
+                            isLiked={this.state.commentIsLiked}
+                            likesCount={this.state.commentLikesCount}
+                            usersPublicInfo={usersPublicInfo}
+                            updateUsersPublicInfo={this.updateUsersPublicInfo}
                         />)}
                 </div>
                 <div className={styles.text}>{comment.text}</div>

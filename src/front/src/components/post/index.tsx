@@ -9,6 +9,7 @@ import Api from "../../api";
 import PostComments from "../postComments";
 import UnauthenticatedMessage from "../unauthenticatedMessage";
 import Toast from "../toast";
+import LikePopup from "../likePopup";
 
 interface IPostProps {
     userInfo: IUserInfo | null;
@@ -29,6 +30,7 @@ interface IPostState {
     defaultUserPictureIsShowing: boolean;
     defaultPostAuthorPictureIsShowing: boolean;
     postPreviewPictureIsCorrupted: boolean;
+    likePopupIsOpened: boolean;
 }
 
 class Post extends React.Component<IPostProps, IPostState> {
@@ -51,7 +53,8 @@ class Post extends React.Component<IPostProps, IPostState> {
             errorMessageIsOpened: false,
             defaultUserPictureIsShowing: false,
             defaultPostAuthorPictureIsShowing: false,
-            postPreviewPictureIsCorrupted: false
+            postPreviewPictureIsCorrupted: false,
+            likePopupIsOpened: false
         };
 
         this.postContainerRef = null;
@@ -79,6 +82,8 @@ class Post extends React.Component<IPostProps, IPostState> {
         this.showDefaultUserPicture = this.showDefaultUserPicture.bind(this);
         this.showDefaultPostAuthorPicture = this.showDefaultPostAuthorPicture.bind(this);
         this.onDefaultPostPreviewPictureError = this.onDefaultPostPreviewPictureError.bind(this);
+        this.openLikePopup = this.openLikePopup.bind(this);
+        this.closeLikePopup = this.closeLikePopup.bind(this);
     }
 
     postContainerRef: any = null;
@@ -135,6 +140,7 @@ class Post extends React.Component<IPostProps, IPostState> {
     }
 
     handleLikePress(): void {
+        this.setState({ likePopupIsOpened: false });
         if (this.props.userInfo) {
             this.togglePostLike();
         } else {
@@ -242,6 +248,16 @@ class Post extends React.Component<IPostProps, IPostState> {
         this.setState({ postPreviewPictureIsCorrupted: true });
     }
 
+    openLikePopup(): void {
+        if (!this.state.unauthenticatedMessageIsOpened) {
+            this.setState({ likePopupIsOpened: true });
+        }
+    }
+
+    closeLikePopup(): void {
+        this.setState({ likePopupIsOpened: false });
+    }
+
     renderPost(): JSX.Element {
         const { userInfo, post, usersPublicInfo } = this.props;
         return (
@@ -308,7 +324,11 @@ class Post extends React.Component<IPostProps, IPostState> {
                                         <div className={styles.commentsTitle}>{"Comments"}</div>
                                     )
                         )}
-                    <div className={this.state.postIsLiked ? styles.likeContainerActive : styles.likeContainer}>
+                    <div
+                        className={this.state.postIsLiked ? styles.likeContainerActive : styles.likeContainer}
+                        onMouseEnter={this.openLikePopup}
+                        onMouseLeave={this.closeLikePopup}
+                    >
                         <div
                             className={userInfo ? styles.likeButtonActive : styles.likeButtonDisabled}
                             onClick={this.handleLikePress}
@@ -317,10 +337,18 @@ class Post extends React.Component<IPostProps, IPostState> {
                         </div>
                         <div className={styles.likeCount}>{this.state.postLikesCount}</div>
                         {this.state.unauthenticatedMessageIsOpened && (
-                                <UnauthenticatedMessage
-                                    closeUnauthenticatedMessage={this.closeUnauthenticatedMessage}
-                                />
-                            )}
+                            <UnauthenticatedMessage
+                                closeUnauthenticatedMessage={this.closeUnauthenticatedMessage}
+                            />)}
+                        {this.state.likePopupIsOpened && (
+                            <LikePopup
+                                userInfo={userInfo}
+                                likes={post.likes}
+                                isLiked={this.state.postIsLiked}
+                                likesCount={this.state.postLikesCount}
+                                usersPublicInfo={usersPublicInfo}
+                                updateUsersPublicInfo={this.updateUsersPublicInfo}
+                            />)}
                     </div>
                 </div>
                 {this.state.postIsExpanded && post && post.comments && (
