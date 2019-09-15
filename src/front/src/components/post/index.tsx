@@ -60,6 +60,7 @@ class Post extends React.Component<IPostProps, IPostState> {
 
         this.updateUsersPublicInfo = this.updateUsersPublicInfo.bind(this);
         this.handleClickOutsidePostContainer = this.handleClickOutsidePostContainer.bind(this);
+        this.onEscapePress = this.onEscapePress.bind(this);
         this.handleLikePress = this.handleLikePress.bind(this);
         this.showUnauthenticatedMessage = this.showUnauthenticatedMessage.bind(this);
         this.closeUnauthenticatedMessage = this.closeUnauthenticatedMessage.bind(this);
@@ -91,6 +92,7 @@ class Post extends React.Component<IPostProps, IPostState> {
 
     componentDidMount(): void {
         document.addEventListener("mousedown", this.handleClickOutsidePostContainer);
+        document.addEventListener("keydown", this.onEscapePress);
         if (this.props.post && this.props.post.author) {
             this.updateUsersPublicInfo(this.props.post.author);
         }
@@ -111,10 +113,17 @@ class Post extends React.Component<IPostProps, IPostState> {
 
     componentWillUnmount(): void {
         document.removeEventListener("mousedown", this.handleClickOutsidePostContainer);
+        document.removeEventListener("keydown", this.onEscapePress);
     }
 
     handleClickOutsidePostContainer(event: UIEvent): void {
         if (this.postContainerRef && !this.postContainerRef.contains(event.target)) {
+            this.collapsePost();
+        }
+    }
+
+    onEscapePress(event: KeyboardEvent): void {
+        if (event.keyCode === 27) {
             this.collapsePost();
         }
     }

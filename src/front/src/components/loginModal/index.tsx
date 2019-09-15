@@ -30,6 +30,7 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
         this.inputContainerRef = null;
 
         this.handleClickOutsideInputContainer = this.handleClickOutsideInputContainer.bind(this);
+        this.onEscapePress = this.onEscapePress.bind(this);
         this.login = this.login.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.setUserName = this.setUserName.bind(this);
@@ -43,16 +44,24 @@ class LoginModal extends React.Component<ILoginModalProps, ILoginModalState> {
 
     componentDidMount(): void {
         document.addEventListener("mousedown", this.handleClickOutsideInputContainer);
+        document.addEventListener("keydown", this.onEscapePress);
     }
 
     componentWillUnmount(): void {
         document.removeEventListener("mousedown", this.handleClickOutsideInputContainer);
+        document.removeEventListener("keydown", this.onEscapePress);
     }
 
     handleClickOutsideInputContainer(event: UIEvent): void {
         if (this.inputContainerRef && !this.inputContainerRef.contains(event.target)) {
             this.closeModal();
           }
+    }
+
+    onEscapePress(event: KeyboardEvent): void {
+        if (event.keyCode === 27) {
+            this.closeModal();
+        }
     }
 
     login(event: React.FormEvent<HTMLFormElement>): void {

@@ -28,6 +28,7 @@ class UserInfoModal extends React.Component<IUserInfoModalProps, IUserInfoModalS
         this.inputContainerRef = null;
 
         this.handleClickOutsideInputContainer = this.handleClickOutsideInputContainer.bind(this);
+        this.onEscapePress = this.onEscapePress.bind(this);
         this.sendUserInfo = this.sendUserInfo.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.setUserInfo = this.setUserInfo.bind(this);
@@ -39,6 +40,7 @@ class UserInfoModal extends React.Component<IUserInfoModalProps, IUserInfoModalS
 
     componentDidMount(): void {
         document.addEventListener("mousedown", this.handleClickOutsideInputContainer);
+        document.addEventListener("keydown", this.onEscapePress);
     }
 
     componentDidUpdate(prevProps: IUserInfoModalProps, prevState: IUserInfoModalState): void {
@@ -53,12 +55,19 @@ class UserInfoModal extends React.Component<IUserInfoModalProps, IUserInfoModalS
 
     componentWillUnmount(): void {
         document.removeEventListener("mousedown", this.handleClickOutsideInputContainer);
+        document.removeEventListener("keydown", this.onEscapePress);
     }
 
     handleClickOutsideInputContainer(event: UIEvent): void {
         if (this.inputContainerRef && !this.inputContainerRef.contains(event.target)) {
             this.closeModal();
           }
+    }
+
+    onEscapePress(event: KeyboardEvent): void {
+        if (event.keyCode === 27) {
+            this.closeModal();
+        }
     }
 
     sendUserInfo(event: React.FormEvent<HTMLFormElement>): void {

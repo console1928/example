@@ -26,6 +26,7 @@ class FeedbackModal extends React.Component<IFeedbackModalProps, IFeedbackModalS
         this.inputContainerRef = null;
 
         this.handleClickOutsideInputContainer = this.handleClickOutsideInputContainer.bind(this);
+        this.onEscapePress = this.onEscapePress.bind(this);
         this.sendFeedback = this.sendFeedback.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.setFeedbackText = this.setFeedbackText.bind(this);
@@ -37,14 +38,22 @@ class FeedbackModal extends React.Component<IFeedbackModalProps, IFeedbackModalS
 
     componentDidMount(): void {
         document.addEventListener("mousedown", this.handleClickOutsideInputContainer);
+        document.addEventListener("keydown", this.onEscapePress);
     }
 
     componentWillUnmount(): void {
         document.removeEventListener("mousedown", this.handleClickOutsideInputContainer);
+        document.removeEventListener("keydown", this.onEscapePress);
     }
 
     handleClickOutsideInputContainer(event: UIEvent): void {
         if (this.inputContainerRef && !this.inputContainerRef.contains(event.target)) {
+            this.closeModal();
+        }
+    }
+
+    onEscapePress(event: KeyboardEvent): void {
+        if (event.keyCode === 27) {
             this.closeModal();
         }
     }

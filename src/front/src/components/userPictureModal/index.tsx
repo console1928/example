@@ -30,6 +30,7 @@ class UserPictureModal extends React.Component<IUserPictureModalProps, IUserPict
         this.inputContainerRef = null;
 
         this.handleClickOutsideInputContainer = this.handleClickOutsideInputContainer.bind(this);
+        this.onEscapePress = this.onEscapePress.bind(this);
         this.sendUserPicture = this.sendUserPicture.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.setUserPicture = this.setUserPicture.bind(this);
@@ -42,6 +43,7 @@ class UserPictureModal extends React.Component<IUserPictureModalProps, IUserPict
 
     componentDidMount(): void {
         document.addEventListener("mousedown", this.handleClickOutsideInputContainer);
+        document.addEventListener("keydown", this.onEscapePress);
     }
 
     componentDidUpdate(prevProps: IUserPictureModalProps, prevState: IUserPictureModalState): void {
@@ -56,12 +58,19 @@ class UserPictureModal extends React.Component<IUserPictureModalProps, IUserPict
 
     componentWillUnmount(): void {
         document.removeEventListener("mousedown", this.handleClickOutsideInputContainer);
+        document.removeEventListener("keydown", this.onEscapePress);
     }
 
     handleClickOutsideInputContainer(event: UIEvent): void {
         if (this.inputContainerRef && !this.inputContainerRef.contains(event.target)) {
             this.closeModal();
           }
+    }
+
+    onEscapePress(event: KeyboardEvent): void {
+        if (event.keyCode === 27) {
+            this.closeModal();
+        }
     }
 
     sendUserPicture(event: React.FormEvent<HTMLFormElement>): void {
@@ -135,6 +144,7 @@ class UserPictureModal extends React.Component<IUserPictureModalProps, IUserPict
                                 required={true}
                                 onChange={this.setUserPicture}
                                 value={this.state.userPicture || ""}
+                                placeholder={"URL to your profile picture"}
                             />
                         </div>
                         <div className={styles.errorMessageContainer}>
