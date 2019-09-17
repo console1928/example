@@ -71,14 +71,16 @@ class LikePopup extends React.Component<ILikePopupProps, ILikePopupState> {
                 className={styles.container}
                 ref={ref => this.likePopupContainerRef = ref}
             >
-                {isLiked && userInfo && (
-                    <Link to={`/user/${userInfo._id}`} className={styles.userPictureContainer}>
-                        <img
-                            className={styles.userPicture}
-                            src={usersPublicInfo[userInfo._id].picture}
-                            onError={() => this.onUserPictureError(userInfo._id)}
-                        />
-                    </Link>)}
+                {isLiked &&
+                    userInfo &&
+                    corruptedUserPictures.indexOf(userInfo._id) === -1 && (
+                        <Link to={`/user/${userInfo._id}`} className={styles.userPictureContainer}>
+                            <img
+                                className={styles.userPicture}
+                                src={usersPublicInfo[userInfo._id].picture}
+                                onError={() => this.onUserPictureError(userInfo._id)}
+                            />
+                        </Link>)}
                 {likes.map((userId, index) => {
                         return index < userPicturesCounter &&
                             usersPublicInfo[userId] &&
