@@ -67,6 +67,7 @@ class Main extends React.Component<IMainProps, IMainState> {
         this.openFeedbackIsSentMessage = this.openFeedbackIsSentMessage.bind(this);
         this.closeFeedbackIsSentMessage = this.closeFeedbackIsSentMessage.bind(this);
         this.onSearch = this.onSearch.bind(this);
+        this.togglePostLike = this.togglePostLike.bind(this);
     }
 
     Api = new Api();
@@ -208,6 +209,20 @@ class Main extends React.Component<IMainProps, IMainState> {
         );
     }
 
+    togglePostLike(postId: string, userId: string): void {
+        const { posts } = this.state;
+        posts.map((post, index) => {
+                if (post._id === postId && post.likes) {
+                    let newPosts: IPost[] = [...posts];
+                    const userIdIndex: number = post.likes.indexOf(userId);
+                    userIdIndex === -1
+                        ? newPosts[index].likes.push(userId)
+                        : newPosts[index].likes.splice(userIdIndex, 1);
+                    this.setState({ posts: newPosts });
+                }
+            });
+    }
+
     render(): JSX.Element | null {
         return (
             <React.Fragment>
@@ -250,7 +265,8 @@ class Main extends React.Component<IMainProps, IMainState> {
                                     userInfo={this.props.userInfo}
                                     usersPublicInfo={this.props.usersPublicInfo}
                                     updateUsersPublicInfo={this.updateUsersPublicInfo}
-                                    />
+                                    togglePostLike={this.togglePostLike}
+                                />
                         )}
                     <div className={styles.bottomLoaderContainer}>
                         {this.state.networkError ? (

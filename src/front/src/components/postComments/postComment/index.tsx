@@ -15,11 +15,11 @@ interface IPostCommentProps {
     reloadPostComments: () => void;
     usersPublicInfo: { [userId: string]: IUserPublicInfo };
     updateUsersPublicInfo: (userId: string) => void;
+    toggleCommentLike: (commentId: string, userId: string) => void;
 }
 
 interface IPostCommentState {
     commentIsLiked: boolean;
-    commentLikesCount: number;
     unauthenticatedMessageIsOpened: boolean;
     answerInputIsOpened: boolean;
     answerValue: string;
@@ -39,9 +39,6 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
                 this.props.comment.likes &&
                 this.props.comment.likes.indexOf(this.props.userInfo._id) !== -1
             ) || false,
-            commentLikesCount: (
-                this.props.comment && this.props.comment.likes && this.props.comment.likes.length
-            ) || 0,
             unauthenticatedMessageIsOpened: false,
             answerInputIsOpened: false,
             answerValue: "",
@@ -81,6 +78,17 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
         }
     }
 
+    componentDidUpdate(prevProps: IPostCommentProps, prevState: IPostCommentState): void {
+        if (prevProps !== this.props) {
+            const { userInfo, comment } = this.props;
+            this.setState({
+                commentIsLiked: (
+                    userInfo && comment && comment.likes && comment.likes.indexOf(userInfo._id) !== -1
+                ) || false
+            });
+        }
+    }
+
     updateUsersPublicInfo(userId: string): void {
         if (!this.props.usersPublicInfo.hasOwnProperty(userId)) {
             this.props.updateUsersPublicInfo(userId);
@@ -98,13 +106,13 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
     }
 
     toggleCommentLike(): void {
-        this.Api.toggleCommentLike(this.props.comment._id)
-            .then(response => this.setState(
-                    () => ({ commentIsLiked: !this.state.commentIsLiked }),
-                    () => this.setState(
-                            { commentLikesCount: this.state.commentLikesCount + (this.state.commentIsLiked ? 1 : -1) }
-                        )
-                ))
+        const { comment, userInfo, toggleCommentLike } = this.props;
+        this.Api.toggleCommentLike(comment._id)
+            .then(response => {
+                    if (userInfo && userInfo._id) {
+                        toggleCommentLike(comment._id, userInfo._id);
+                    }
+                })
             .catch(error => {
                     console.error(error);
                     this.openErrorMessage();
@@ -235,20 +243,24 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
                     >
                         {this.state.commentIsLiked ? <FaHeart /> : <FaRegHeart />}
                     </div>
-                    <div className={styles.likeCount}>{this.state.commentLikesCount}</div>
+                    {this.props.comment.likes && (
+                        <div className={styles.likeCount}>
+                            {this.props.comment.likes.length}
+                        </div>)}
                     {this.state.unauthenticatedMessageIsOpened && (
                         <UnauthenticatedMessage
                             closeUnauthenticatedMessage={this.closeUnauthenticatedMessage}
                         />)}
-                    {this.state.likePopupIsOpened && (
-                        <LikePopup
-                            userInfo={userInfo}
-                            likes={comment.likes}
-                            isLiked={this.state.commentIsLiked}
-                            likesCount={this.state.commentLikesCount}
-                            usersPublicInfo={usersPublicInfo}
-                            updateUsersPublicInfo={this.updateUsersPublicInfo}
-                        />)}
+                    {this.props.comment.likes &&
+                        this.state.likePopupIsOpened && (
+                            <LikePopup
+                                userInfo={userInfo}
+                                likes={comment.likes}
+                                isLiked={this.state.commentIsLiked}
+                                likesCount={this.props.comment.likes.length}
+                                usersPublicInfo={usersPublicInfo}
+                                updateUsersPublicInfo={this.updateUsersPublicInfo}
+                            />)}
                 </div>
                 <div className={styles.text}>{comment.text}</div>
                 {this.state.answerInputIsOpened && (
@@ -269,7 +281,7 @@ class PostComment extends React.Component<IPostCommentProps, IPostCommentState> 
                     )}
                 {this.state.errorMessageIsOpened && (
                         <Toast
-                            text={"Network or server error: failed to like."}
+                            text={"Network or server error: failed to toggle like."}
                             closeToast={this.closeErrorMessage}
                         />
                     )}

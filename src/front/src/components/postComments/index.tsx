@@ -34,6 +34,7 @@ class PostComments extends React.Component<IPostCommentsProps, IPostCommentsStat
         this.queryComments = this.queryComments.bind(this);
         this.renderPostComments = this.renderPostComments.bind(this);
         this.reloadPostComments = this.reloadPostComments.bind(this);
+        this.toggleCommentLike = this.toggleCommentLike.bind(this);
     }
 
     postCommentsContainerRef: any = null;
@@ -71,6 +72,22 @@ class PostComments extends React.Component<IPostCommentsProps, IPostCommentsStat
             .catch(error => console.error(error));
     }
 
+    toggleCommentLike(commentId: string, userId: string): void {
+        const { comments } = this.state;
+        if (comments) {
+            comments.map((comment, index) => {
+                if (comment._id === commentId && comment.likes) {
+                    let newComments: IPostComment[] = [...comments];
+                    const userIdIndex: number = comment.likes.indexOf(userId);
+                    userIdIndex === -1
+                        ? newComments[index].likes.push(userId)
+                        : newComments[index].likes.splice(userIdIndex, 1);
+                    this.setState({ comments: newComments });
+                }
+            });
+        }
+    }
+
     renderPostComments(): JSX.Element {
         return (
             <div className={styles.container} ref={ref => this.postCommentsContainerRef = ref}>
@@ -83,6 +100,7 @@ class PostComments extends React.Component<IPostCommentsProps, IPostCommentsStat
                                     reloadPostComments={this.reloadPostComments}
                                     usersPublicInfo={this.props.usersPublicInfo}
                                     updateUsersPublicInfo={this.updateUsersPublicInfo}
+                                    toggleCommentLike={this.toggleCommentLike}
                                 />
                                 <div className={styles.childComments}>
                                     <PostComments

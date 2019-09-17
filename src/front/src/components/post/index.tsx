@@ -16,12 +16,12 @@ interface IPostProps {
     post: IPost;
     usersPublicInfo: { [userId: string]: IUserPublicInfo };
     updateUsersPublicInfo: (userId: string) => void;
+    togglePostLike: (postId: string, userId: string) => void;
 }
 
 interface IPostState {
     postIsLiked: boolean;
     postIsExpanded: boolean;
-    postLikesCount: number;
     unauthenticatedMessageIsOpened: boolean;
     postCommentValue: string;
     commentsAreLoading: boolean;
@@ -45,7 +45,6 @@ class Post extends React.Component<IPostProps, IPostState> {
                 this.props.post.likes.indexOf(this.props.userInfo._id) !== -1
             ) || false,
             postIsExpanded: false,
-            postLikesCount: (this.props.post && this.props.post.likes && this.props.post.likes.length) || 0,
             unauthenticatedMessageIsOpened: false,
             postCommentValue: "",
             commentsAreLoading: false,
@@ -105,13 +104,9 @@ class Post extends React.Component<IPostProps, IPostState> {
 
     componentDidUpdate(prevProps: IPostProps, prevState: IPostState): void {
         if (prevProps !== this.props) {
+            const { userInfo, post } = this.props;
             this.setState({
-                postIsLiked: (
-                    this.props.userInfo &&
-                    this.props.post &&
-                    this.props.post.likes &&
-                    this.props.post.likes.indexOf(this.props.userInfo._id) !== -1
-                ) || false
+                postIsLiked: (userInfo && post && post.likes && post.likes.indexOf(userInfo._id) !== -1) || false
             });
         }
     }
@@ -159,13 +154,13 @@ class Post extends React.Component<IPostProps, IPostState> {
     }
 
     togglePostLike(): void {
-        this.Api.togglePostLike(this.props.post._id)
-            .then(response => this.setState(
-                    () => ({ postIsLiked: !this.state.postIsLiked }),
-                    () => this.setState(
-                            { postLikesCount: this.state.postLikesCount + (this.state.postIsLiked ? 1 : -1) }
-                        )
-                ))
+        const { post, userInfo, togglePostLike } = this.props;
+        this.Api.togglePostLike(post._id)
+            .then(response => {
+                    if (userInfo && userInfo._id) {
+                        togglePostLike(post._id, userInfo._id);
+                    }
+                })
             .catch(error => {
                     console.error(error);
                     this.openErrorMessage();
@@ -335,20 +330,24 @@ class Post extends React.Component<IPostProps, IPostState> {
                         >
                             {this.state.postIsLiked ? <FaHeart /> : <FaRegHeart />}
                         </div>
-                        <div className={styles.likeCount}>{this.state.postLikesCount}</div>
+                        {this.props.post.likes && (
+                            <div className={styles.likeCount}>
+                                {this.props.post.likes.length}
+                            </div>)}
                         {this.state.unauthenticatedMessageIsOpened && (
                             <UnauthenticatedMessage
                                 closeUnauthenticatedMessage={this.closeUnauthenticatedMessage}
                             />)}
-                        {this.state.likePopupIsOpened && (
-                            <LikePopup
-                                userInfo={userInfo}
-                                likes={post.likes}
-                                isLiked={this.state.postIsLiked}
-                                likesCount={this.state.postLikesCount}
-                                usersPublicInfo={usersPublicInfo}
-                                updateUsersPublicInfo={this.updateUsersPublicInfo}
-                            />)}
+                        {this.props.post.likes &&
+                            this.state.likePopupIsOpened && (
+                                <LikePopup
+                                    userInfo={userInfo}
+                                    likes={post.likes}
+                                    isLiked={this.state.postIsLiked}
+                                    likesCount={this.props.post.likes.length}
+                                    usersPublicInfo={usersPublicInfo}
+                                    updateUsersPublicInfo={this.updateUsersPublicInfo}
+                                />)}
                     </div>
                 </div>
                 {this.state.postIsExpanded && post && post.comments && (
@@ -403,7 +402,7 @@ class Post extends React.Component<IPostProps, IPostState> {
                     )}
                 {this.state.errorMessageIsOpened && (
                         <Toast
-                            text={"Network or server error: failed to like."}
+                            text={"Network or server error: failed to toggle like."}
                             closeToast={this.closeErrorMessage}
                         />
                     )}
